@@ -59,6 +59,7 @@ public class RCAgent : Agent {
 
     public override void CollectObservations()
     {
+        // Add team input 
         AddVectorObs(ball.position);
         AddVectorObs(ball.GetComponent<Rigidbody>().velocity);
         AddVectorObs(opponents[0].position);

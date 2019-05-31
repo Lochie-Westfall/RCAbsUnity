@@ -411,7 +411,7 @@ GameObject:
   - component: {fileID: 772905154}
   m_Layer: 0
   m_Name: Agent R 1
-  m_TagString: Untagged
+  m_TagString: right
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -425,7 +425,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 772905153}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.2
   m_Height: 2
   m_Direction: 1
@@ -465,15 +465,12 @@ MonoBehaviour:
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 1
+    numberOfActionsBetweenDecisions: 60
   ball: {fileID: 1025293629}
-  opponents:
-  - {fileID: 1223085757}
-  - {fileID: 1428701525}
-  teammates:
-  - {fileID: 1516869571}
+  opponents: []
+  teammates: []
   leftSide: 0
-  kickCooldown: 0.5
+  kickCooldown: 1
 --- !u!4 &772905157
 Transform:
   m_ObjectHideFlags: 0
@@ -705,7 +702,7 @@ GameObject:
   - component: {fileID: 1223085759}
   m_Layer: 0
   m_Name: Agent L 1
-  m_TagString: Untagged
+  m_TagString: left
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -729,15 +726,12 @@ MonoBehaviour:
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 1
+    numberOfActionsBetweenDecisions: 60
   ball: {fileID: 1025293629}
-  opponents:
-  - {fileID: 772905157}
-  - {fileID: 1516869571}
-  teammates:
-  - {fileID: 1428701525}
+  opponents: []
+  teammates: []
   leftSide: 1
-  kickCooldown: 0.5
+  kickCooldown: 1
 --- !u!4 &1223085757
 Transform:
   m_ObjectHideFlags: 0
@@ -778,7 +772,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1223085755}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.2
   m_Height: 2
   m_Direction: 1
@@ -984,7 +978,7 @@ GameObject:
   - component: {fileID: 1428701526}
   m_Layer: 0
   m_Name: Agent L 2
-  m_TagString: Untagged
+  m_TagString: left
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1013,7 +1007,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1428701524}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.2
   m_Height: 2
   m_Direction: 1
@@ -1053,15 +1047,12 @@ MonoBehaviour:
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 1
+    numberOfActionsBetweenDecisions: 60
   ball: {fileID: 1025293629}
-  opponents:
-  - {fileID: 772905157}
-  - {fileID: 1516869571}
-  teammates:
-  - {fileID: 1223085757}
+  opponents: []
+  teammates: []
   leftSide: 1
-  kickCooldown: 0.5
+  kickCooldown: 1
 --- !u!1 &1516869567
 GameObject:
   m_ObjectHideFlags: 0
@@ -1076,7 +1067,7 @@ GameObject:
   - component: {fileID: 1516869568}
   m_Layer: 0
   m_Name: Agent R 2
-  m_TagString: Untagged
+  m_TagString: right
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1090,7 +1081,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1516869567}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.2
   m_Height: 2
   m_Direction: 1
@@ -1130,15 +1121,12 @@ MonoBehaviour:
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 1
+    numberOfActionsBetweenDecisions: 60
   ball: {fileID: 1025293629}
-  opponents:
-  - {fileID: 1223085757}
-  - {fileID: 1428701525}
-  teammates:
-  - {fileID: 772905157}
+  opponents: []
+  teammates: []
   leftSide: 0
-  kickCooldown: 0.5
+  kickCooldown: 1
 --- !u!4 &1516869571
 Transform:
   m_ObjectHideFlags: 0
@@ -1279,15 +1267,14 @@ MonoBehaviour:
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: c101f6763a20a4d51abad4c6902c31be, type: 2}
-    _brainsToControl:
-    - {fileID: 11400000, guid: c101f6763a20a4d51abad4c6902c31be, type: 2}
+    _brainsToControl: []
   maxSteps: 0
   trainingConfiguration:
     width: 80
     height: 80
     qualityLevel: 1
-    timeScale: 1
-    targetFrameRate: 60
+    timeScale: 100
+    targetFrameRate: 0
   inferenceConfiguration:
     width: 1280
     height: 720
