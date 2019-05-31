@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: RCAgentBrain
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 2
+    vectorObservationSize: 30
     numStackedVectorObservations: 1
-    vectorActionSize: 02000000
+    vectorActionSize: 03000000
     cameraResolutions: []
     vectorActionDescriptions:
     - 
     - 
+    - 
     vectorActionSpaceType: 1
-  model: {fileID: 0}
+  model: {fileID: -8683681696031065707, guid: edcf09fa2977b4f5b9055779b49ec222, type: 3}
   inferenceDevice: 0
