@@ -22,26 +22,38 @@ public class RCAgent : Agent {
     float nextReward = 0;
     float timeLastKicked = 0;
 
+    Vector3 sideVector;
+
     void Start () 
     {   
+        sideVector = (leftSide)?new Vector3(1f, 1f, 1f):new Vector3(-1f, 1f, -1f);
+
         teammates = new List<Transform>();
         opponents = new List<Transform>();
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("left")) {
-            if (obj != gameObject) {
-                if (leftSide) {
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("left")) 
+        {
+            if (obj != gameObject) 
+            {
+                if (leftSide) 
+                {
                     teammates.Add(obj.transform);
                 }
-                else {
+                else 
+                {
                     opponents.Add(obj.transform);
                 }
             }
         }
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("right")) {
-            if (obj != gameObject) {
-                if (!leftSide) {
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("right")) 
+        {
+            if (obj != gameObject) 
+            {
+                if (!leftSide) 
+                {
                     teammates.Add(obj.transform);
                 }
-                else {
+                else 
+                {
                     opponents.Add(obj.transform);
                 }
             }
@@ -59,82 +71,130 @@ public class RCAgent : Agent {
 
     public override void CollectObservations()
     {
-        // Add team input 
-        AddVectorObs(ball.position);
-        AddVectorObs(ball.GetComponent<Rigidbody>().velocity);
-        AddVectorObs(opponents[0].position);
-        AddVectorObs(opponents[0].GetComponent<Rigidbody>().velocity);
-        AddVectorObs(opponents[1].position);
-        AddVectorObs(opponents[1].GetComponent<Rigidbody>().velocity);
-        AddVectorObs(teammates[0].position);
-        AddVectorObs(teammates[0].GetComponent<Rigidbody>().velocity);
-        AddVectorObs(transform.position);
-        AddVectorObs(GetComponent<Rigidbody>().velocity);
+        AddVectorObs(Vector3.Scale(sideVector, ball.position));
+        AddVectorObs(Vector3.Scale(sideVector, ball.GetComponent<Rigidbody>().velocity));
+        AddVectorObs(Vector3.Scale(sideVector, transform.position));
+        AddVectorObs(Vector3.Scale(sideVector, GetComponent<Rigidbody>().velocity));
+
+        foreach (Transform teammate in teammates) {
+            AddVectorObs(Vector3.Scale(sideVector, teammate.position));
+            AddVectorObs(Vector3.Scale(sideVector, teammate.GetComponent<Rigidbody>().velocity));
+        }
+
+        foreach (Transform opponent in opponents) {
+            AddVectorObs(Vector3.Scale(sideVector, opponent.position));
+            AddVectorObs(Vector3.Scale(sideVector, opponent.GetComponent<Rigidbody>().velocity));
+        }
+
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        Vector3 ballpos = ball.position - Vector3.up /4f;
-        if (Vector3.Distance(transform.position, ballpos) < Vector3.Distance(teammates[0].position, ballpos)) {
-            float opponentAngle1 = AngleBetweenPoints(opponents[0].position, goal.position);
-            float opponentAngle2 = AngleBetweenPoints(opponents[1].position, goal.position);
-
-            float opponentDist1 = Vector3.Distance(transform.position, opponents[0].position);
-            float opponentDist2 = Vector3.Distance(transform.position, opponents[1].position);
-
-            if (opponentDist1 > 1f && opponentDist2 > 1f) {
-                if (Vector3.Distance(transform.position, ballpos) < 1 && Time.time - timeLastKicked > kickCooldown)
+        if (Vector3.Distance(ball.position, transform.position) < Vector3.Distance(ball.position, GetNearestTeammateToPoint(ball.position).position))
+        {
+            float closestOpponentDist = 9999999f;
+            foreach (Transform opponent in opponents) {
+//                float dist = Vector3.Distance(transform.position, opponent.position); 
+                float dist = AngleBetweenPoints(opponent.position, otherGoal.position);
+                if (dist < closestOpponentDist) {
+                    closestOpponentDist = dist;
+                }
+            }
+            if (closestOpponentDist > 20f) {
+                if (Vector3.Distance(transform.position, ball.position) < 0.25f && Time.time - timeLastKicked > kickCooldown)
                 {
-                    ball.GetComponent<Rigidbody>().AddForce((otherGoal.position - ballpos).normalized * 500f);
-                    timeLastKicked = Time.time;
+                    KickBallPoint(otherGoal.position);
                 }
                 else
                 {
-                    GetComponent<Rigidbody>().velocity = (ballpos - transform.position).normalized * 5f;
+                    MoveToPoint(ball.position);
                 }
             }
             else
             {
-                if (Vector3.Distance(transform.position, ballpos) < 0.75 && Time.time - timeLastKicked > kickCooldown) {
-                    ball.GetComponent<Rigidbody>().AddForce((teammates[0].position - ballpos).normalized * 500f);
-                    timeLastKicked = Time.time;
+                if (Vector3.Distance(transform.position, ball.position) < 0.25f && Time.time - timeLastKicked > kickCooldown) 
+                {
+                    KickBallPoint(GetNearestTeammateToPoint(transform.position).position);
+                }
+                else
+                {
+                    MoveToPoint(ball.position);
                 }
             }
         }
         else 
         {
-            targetPos = new Vector3(vectorAction[0], 0, vectorAction[1]) * 50f;
-            GetComponent<Rigidbody>().velocity = (targetPos - transform.position).normalized * 5f; 
+            MoveToPoint(new Vector3(vectorAction[0] * sideVector[0], 0, vectorAction[1] * sideVector[2]) * 10f);
         }
 
         SetReward(nextReward);
-        if (nextReward != 0 || ball.position.y <= 0.2f) {
+        if (nextReward != 0 || ball.position.y <= 0f) 
+        {
             nextReward = 0;
-            Done();
+            AgentReset();
         }
     }
 
     public override void AgentReset()
     {
-        transform.position = Vector3.forward * Random.Range(0f, 2f) * ((leftSide)?10:-10);
+        transform.position = Vector3.right * Random.Range(-2f, 2f) + Vector3.forward * Random.Range(0f, 4f) * ((leftSide)?1:-1) + Vector3.up*0;
         ball.position = Vector3.up;
+        ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
     public override void AgentOnDone()
     {
     }
+    
+    Transform GetNearestTeammateToPoint (Vector3 point) 
+    {
+        Transform closestTeammate = transform;
+        float closestTeammateDist = 99999999999999f;
+        foreach (Transform teammate in teammates) 
+        {
+            float dist = Vector3.Distance(point, teammate.position); 
+            if (dist < closestTeammateDist) 
+            {
+                closestTeammateDist = dist;
+                closestTeammate = teammate;
+            }
+        }
 
-
-    float AngleBetweenPoints (Vector3 a, Vector3 b) {
-           float angle = Vector3.Dot((a - transform.position).normalized, (b - transform.position).normalized); 
-           return angle;
+        return closestTeammate;
     }
 
-    void AddPositiveReward () {
+    void KickBallPoint(Vector3 point) 
+    {
+        ball.GetComponent<Rigidbody>().AddForce((point - (ball.position)).normalized * 200f);
+        GetComponent<Rigidbody>().velocity *= 0f;
+        timeLastKicked = Time.time;
+    }
+
+    void MoveToPoint(Vector3 point)
+    {
+        Vector3 offset = point - transform.position;
+        offset.y = 0f;
+        transform.rotation = Quaternion.LookRotation(offset);
+        Vector3 velocity = Vector3.MoveTowards(GetComponent<Rigidbody>().velocity, offset.normalized * 1f, Time.deltaTime * 1f); 
+        velocity.y = 0f;
+        GetComponent<Rigidbody>().velocity = velocity; 
+    }
+
+    float AngleBetweenPoints (Vector3 a, Vector3 b) 
+    {
+           return Vector3.Angle(b - transform.position, a - transform.position);
+    }
+
+    void AddPositiveReward ()
+     {
         nextReward = 10;
+        if (gameObject.name.Contains("1")) {
+            print((leftSide)?"Left Scored":"Right Scored");
+        }
     }
 
-    void AddNegativeReward () {
+    void AddNegativeReward () 
+    {
         nextReward = -5;
     }
 }

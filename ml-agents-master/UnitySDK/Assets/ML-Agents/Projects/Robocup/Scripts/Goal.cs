@@ -11,7 +11,6 @@ public class Goal : MonoBehaviour
     void OnTriggerEnter(Collider other) 
     {
         if (other.gameObject.tag == "ball") {
-            print("goal");
             scoreEvent.Invoke();
         }
     }
