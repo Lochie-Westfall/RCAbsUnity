@@ -26,6 +26,7 @@ public class RCAgent : Agent {
     public float turnRadius = 1f;
     public float straightRunMultiplier = 1.5f;
     float currentSpeed = 0f;
+    float timeInBallRange = 0f;
 
     Vector3 sideVector;
 
@@ -95,6 +96,17 @@ public class RCAgent : Agent {
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+
+        if (Vector3.Distance(transform.position, ball.position) < 0.2f) {
+            currentSpeed = 0f;
+        }
+        if (Vector3.Distance(transform.position, ball.position) < 0.5f) {
+            timeInBallRange += Time.deltaTime;
+        }
+        else {
+            timeInBallRange = 0f;
+        }
+
         if (Vector3.Distance(ball.position, transform.position) < Vector3.Distance(ball.position, GetNearestTeammateToPoint(ball.position).position))
         {
             float closestOpponentDist = 9999999f;
@@ -105,7 +117,7 @@ public class RCAgent : Agent {
                 }
             }
             if (closestOpponentDist > 20f) {
-                if (Vector3.Distance(transform.position, ball.position) < 0.25f && Time.time - timeLastKicked > kickCooldown)
+                if (Vector3.Distance(transform.position, ball.position) < 0.25f && timeInBallRange > kickCooldown)
                 {
                     KickBallPoint(otherGoal.position);
                     //KickBallForward();
@@ -117,10 +129,11 @@ public class RCAgent : Agent {
             }
             else
             {
-                if (Vector3.Distance(transform.position, ball.position) < 0.25f && Time.time - timeLastKicked > kickCooldown) 
+                if (Vector3.Distance(transform.position, ball.position) < 0.25f && timeInBallRange > kickCooldown) 
                 {
                     //KickBallPoint(GetNearestTeammateToPoint(transform.position).position);
                     KickBallPoint(GetNearestTeammateToPoint(otherGoal.position).position);
+
                     //KickBallForward();
                 }
                 else
@@ -175,12 +188,14 @@ public class RCAgent : Agent {
         ball.GetComponent<Rigidbody>().AddForce((point - (ball.position)).normalized * 200f);
         currentSpeed = 0f;
         timeLastKicked = Time.time;
+        timeInBallRange = 0f;
     }
 
     void KickBallForward(){
         ball.GetComponent<Rigidbody>().AddForce(transform.forward * 200f);
         currentSpeed = 0f;
         timeLastKicked = Time.time;
+        timeInBallRange = 0f;
     }
 
     void MoveToPoint(Vector3 point)
@@ -188,15 +203,15 @@ public class RCAgent : Agent {
         Vector3 diff = point - transform.position;
         diff.y = 0f;
 
-        float dir = Mathf.Sign(Vector3.Dot(diff, transform.right));
+        float dir = Mathf.Sign(Vector3.Dot(transform.right, diff));
 
-        if (AngleBetweenPoints(transform.position + transform.forward, point) < 20f) 
+        if (AngleBetweenPoints(transform.position + transform.forward, point) < 10f) 
         {
             Turn(0f, turnTime, turnRadius * straightRunMultiplier);
         }
         else 
         {
-            if (Vector3.Distance(transform.position + transform.right*turnRadius*dir, point) > turnRadius) 
+            if (Vector3.Distance(transform.position + transform.right*turnRadius*dir, point) > turnRadius || Vector3.Distance(transform.position, point) < turnRadius) 
             {
                 Turn(dir, turnTime, turnRadius);
             }
