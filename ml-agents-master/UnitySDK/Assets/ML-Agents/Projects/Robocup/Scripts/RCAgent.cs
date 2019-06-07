@@ -25,6 +25,13 @@ public class RCAgent : Agent {
     public float turnTime = 1f;
     public float turnRadius = 1f;
     public float straightRunMultiplier = 1.5f;
+
+    public float kickDecisionAngle = 30f;
+    public float kickableDistance = 0.3f;
+    public float kickPower = 200f;
+    public float movingAngleRange = 10f;
+    public float accelerationSpeed = 1f;
+
     float currentSpeed = 0f;
     float timeInBallRange = 0f;
 
@@ -97,30 +104,25 @@ public class RCAgent : Agent {
     public override void AgentAction(float[] vectorAction, string textAction)
     {
 
-        if (Vector3.Distance(transform.position, ball.position) < 0.2f) {
-            currentSpeed = 0f;
-        }
-        if (Vector3.Distance(transform.position, ball.position) < 0.5f) {
+        if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 1.5f) {
             timeInBallRange += Time.deltaTime;
         }
         else {
             timeInBallRange = 0f;
         }
 
+        // TODO:: consider if you should kick by checking angle from each player to the goal rather than distance to the ball
+
         if (Vector3.Distance(ball.position, transform.position) < Vector3.Distance(ball.position, GetNearestTeammateToPoint(ball.position).position))
         {
-            float closestOpponentDist = 9999999f;
-            foreach (Transform opponent in opponents) {
-                float dist = AngleBetweenPoints(opponent.position, otherGoal.position);
-                if (dist < closestOpponentDist) {
-                    closestOpponentDist = dist;
-                }
-            }
-            if (closestOpponentDist > 20f) {
-                if (Vector3.Distance(transform.position, ball.position) < 0.25f && timeInBallRange > kickCooldown)
+            if (ShouldKick()) {
+                if (Vector3.Distance(transform.position, ball.position) < kickableDistance / 1.25f)
                 {
-                    KickBallPoint(otherGoal.position);
-                    //KickBallForward();
+                    currentSpeed = 0f;
+                }
+                if (Vector3.Distance(transform.position, ball.position) < kickableDistance && timeInBallRange > kickCooldown)
+                {
+                    KickBallForward();
                 }
                 else
                 {
@@ -129,17 +131,7 @@ public class RCAgent : Agent {
             }
             else
             {
-                if (Vector3.Distance(transform.position, ball.position) < 0.25f && timeInBallRange > kickCooldown) 
-                {
-                    //KickBallPoint(GetNearestTeammateToPoint(transform.position).position);
-                    KickBallPoint(GetNearestTeammateToPoint(otherGoal.position).position);
-
-                    //KickBallForward();
-                }
-                else
-                {
-                    MoveToPoint(ball.position);
-                }
+                MoveToPoint(ball.position + (ball.position - otherGoal.position).normalized * turnRadius * 2f);
             }
         }
         else 
@@ -151,7 +143,7 @@ public class RCAgent : Agent {
         if (nextReward != 0 || ball.position.y <= 0f) 
         {
             nextReward = 0;
-            AgentReset();
+            Done();
         }
     }
 
@@ -183,16 +175,32 @@ public class RCAgent : Agent {
         return closestTeammate;
     }
 
+    bool ShouldKick () {
+            bool lookingAtTeammate = false;
+            foreach (Transform teammate in teammates) {
+                if (AngleToPoint(teammate.position) < kickDecisionAngle) {
+                    lookingAtTeammate = true;
+                }
+            }
+            foreach (Transform opponent in opponents) {
+                if (AngleToPoint(opponent.position) < kickDecisionAngle) {
+                    lookingAtTeammate = false;
+                }
+            }
+
+            return (AngleToPoint(otherGoal.position) < kickDecisionAngle || lookingAtTeammate);
+    }
+
     void KickBallPoint(Vector3 point) 
     {
-        ball.GetComponent<Rigidbody>().AddForce((point - (ball.position)).normalized * 200f);
+        ball.GetComponent<Rigidbody>().AddForce((point - (ball.position)).normalized * kickPower);
         currentSpeed = 0f;
         timeLastKicked = Time.time;
         timeInBallRange = 0f;
     }
 
     void KickBallForward(){
-        ball.GetComponent<Rigidbody>().AddForce(transform.forward * 200f);
+        ball.GetComponent<Rigidbody>().AddForce(transform.forward * kickPower);
         currentSpeed = 0f;
         timeLastKicked = Time.time;
         timeInBallRange = 0f;
@@ -205,13 +213,13 @@ public class RCAgent : Agent {
 
         float dir = Mathf.Sign(Vector3.Dot(transform.right, diff));
 
-        if (AngleBetweenPoints(transform.position + transform.forward, point) < 10f) 
+        if (AngleBetweenPoints(transform.position + transform.forward, point) < movingAngleRange) 
         {
             Turn(0f, turnTime, turnRadius * straightRunMultiplier);
         }
         else 
         {
-            if (Vector3.Distance(transform.position + transform.right*turnRadius*dir, point) > turnRadius || Vector3.Distance(transform.position, point) < turnRadius) 
+            if (Vector3.Distance(transform.position + transform.right*turnRadius*dir, point) > turnRadius) 
             {
                 Turn(dir, turnTime, turnRadius);
             }
@@ -225,12 +233,16 @@ public class RCAgent : Agent {
     void Turn(float direction, float timeToRotate, float radius) {
         transform.Rotate(new Vector3(0f, Time.deltaTime * 360f / timeToRotate * direction * currentSpeed, 0f));
         GetComponent<Rigidbody>().velocity = transform.forward * radius / timeToRotate * 2f * Mathf.PI * currentSpeed;
-        currentSpeed = Mathf.Clamp01(currentSpeed + Time.deltaTime * 3f);
+        currentSpeed = Mathf.Clamp01(currentSpeed + Time.deltaTime * accelerationSpeed);
     }
 
     float AngleBetweenPoints (Vector3 a, Vector3 b) 
     {
            return Vector3.Angle(b - transform.position, a - transform.position);
+    }
+
+    float AngleToPoint (Vector3 point) {
+        return Vector3.Angle(transform.forward, point - transform.position);
     }
 
     void AddPositiveReward ()
