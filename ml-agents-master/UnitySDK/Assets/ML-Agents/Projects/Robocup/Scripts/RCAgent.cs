@@ -35,6 +35,9 @@ public class RCAgent : Agent {
     float currentSpeed = 0f;
     float timeInBallRange = 0f;
 
+    float numDataPoints = 0;
+    List<float> metricData = new List<float>();
+
     Vector3 sideVector;
 
     void Start () 
@@ -103,7 +106,7 @@ public class RCAgent : Agent {
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-
+        bool goalScored = (nextReward != 0);
         if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 1.5f) {
             timeInBallRange += Time.deltaTime;
         }
@@ -137,12 +140,30 @@ public class RCAgent : Agent {
         else 
         {
             MoveToPoint(new Vector3(vectorAction[0] * sideVector[0], 0, vectorAction[1] * sideVector[2]) * 10f);
+
+            List<float> metrics = PerformanceMetrics();
+
+            if (metricData.Count == 0) {
+                metricData = metrics;
+            }
+            else {
+                for (int i = 0; i < metrics.Count; i++)
+                {
+                    metricData[i] += metrics[i]; 
+                    nextReward += metrics[i];
+                } 
+            }
+            numDataPoints++;
+
+            SetReward(nextReward);
         }
 
-        SetReward(nextReward);
         if (nextReward != 0 || ball.position.y <= 0f) 
         {
             nextReward = 0;
+        }
+
+        if (ball.position.y <= 0f || goalScored) {
             Done();
         }
     }
@@ -152,6 +173,14 @@ public class RCAgent : Agent {
         transform.position = Vector3.right * Random.Range(-2f, 2f) + Vector3.forward * Random.Range(0f, 4f) * ((leftSide)?1:-1) + Vector3.up*0;
         ball.position = Vector3.up;
         ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+        for (int i = 0; i < metricData.Count; i++)
+        {
+            print(metricData[i]/numDataPoints);
+        }
+
+        numDataPoints = 0;
+        metricData.Clear();
     }
 
     public override void AgentOnDone()
@@ -247,7 +276,7 @@ public class RCAgent : Agent {
 
     void AddPositiveReward ()
      {
-        nextReward = 10;
+        nextReward = 100;
         if (gameObject.name.Contains("1")) {
             print((leftSide)?"Left Scored":"Right Scored");
         }
@@ -255,6 +284,32 @@ public class RCAgent : Agent {
 
     void AddNegativeReward () 
     {
-        nextReward = -5;
+        nextReward = -50;
+    }
+
+    List<float> PerformanceMetrics () {
+        float closestOpponentToBallPath = Mathf.Infinity;
+        float closestOpponentToGoalPath = Mathf.Infinity;
+        float distanceToOpponentGoal = Vector3.Distance(transform.position, otherGoal.position);
+        Transform closestTeammateToBall = GetNearestTeammateToPoint(ball.position);
+        float angleToTeammatePassPath = Vector3.Angle(closestTeammateToBall.forward * 10f, (transform.position - closestTeammateToBall.position));
+        float angleToGoalPath = Vector3.Angle(transform.forward, otherGoal.position - transform.position);
+
+        foreach (Transform opponent in opponents) {
+            float ballAngle = Vector3.Angle(opponent.position - ball.position, transform.position - ball.position);
+            float goalAngle = AngleBetweenPoints(otherGoal.position, opponent.position);
+
+            closestOpponentToBallPath = (ballAngle<closestOpponentToBallPath)?ballAngle:closestOpponentToBallPath;
+            closestOpponentToGoalPath = (goalAngle<closestOpponentToGoalPath)?goalAngle:closestOpponentToGoalPath;
+        }
+
+        List<float> metrics = new List<float>();
+        metrics.Add(Mathf.Clamp01(closestOpponentToBallPath/90f));
+        metrics.Add(Mathf.Clamp01(closestOpponentToGoalPath/90f));
+        metrics.Add(-Mathf.Clamp01(distanceToOpponentGoal/10.81f));
+        metrics.Add(-Mathf.Clamp01(angleToTeammatePassPath/90f));
+        metrics.Add(-Mathf.Clamp01(angleToGoalPath/90f));
+
+        return metrics;
     }
 }
