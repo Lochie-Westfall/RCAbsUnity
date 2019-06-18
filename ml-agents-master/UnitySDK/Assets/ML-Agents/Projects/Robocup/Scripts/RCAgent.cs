@@ -40,6 +40,10 @@ public class RCAgent : Agent {
 
     Vector3 sideVector;
 
+    public enum BehaviourSystem {trained, random, clump};
+
+    public BehaviourSystem behaviourSystem = BehaviourSystem.trained;
+
     void Start () 
     {   
         sideVector = (leftSide)?new Vector3(1f, 1f, 1f):new Vector3(-1f, 1f, -1f);
@@ -115,48 +119,33 @@ public class RCAgent : Agent {
         }
 
         // TODO:: consider if you should kick by checking angle from each player to the goal rather than distance to the ball
-
-        if (Vector3.Distance(ball.position, transform.position) < Vector3.Distance(ball.position, GetNearestTeammateToPoint(ball.position).position))
+        switch (behaviourSystem)
         {
-            if (ShouldKick()) {
-                if (Vector3.Distance(transform.position, ball.position) < kickableDistance / 1.25f)
+            case (BehaviourSystem.trained):
+                if (Vector3.Distance(ball.position, transform.position) < Vector3.Distance(ball.position, GetNearestTeammateToPoint(ball.position).position))
                 {
-                    currentSpeed = 0f;
+                    MoveToAndKickBall();
                 }
-                if (Vector3.Distance(transform.position, ball.position) < kickableDistance && timeInBallRange > kickCooldown)
+                else 
                 {
-                    KickBallForward();
+                    PositionToReceiveBall(vectorAction);
                 }
-                else
+                break;
+            case (BehaviourSystem.random):
+                if (Vector3.Distance(ball.position, transform.position) < Vector3.Distance(ball.position, GetNearestTeammateToPoint(ball.position).position))
                 {
-                    MoveToPoint(ball.position);
+                    MoveToAndKickBall();
                 }
-            }
-            else
-            {
-                MoveToPoint(ball.position + (ball.position - otherGoal.position).normalized * turnRadius * 2f);
-            }
+                else 
+                {
+                    PositionToReceiveBallRandom();
+                }
+                break;
+            case (BehaviourSystem.clump):
+                MoveToAndKickBall();
+                break;
         }
-        else 
-        {
-            MoveToPoint(new Vector3(vectorAction[0] * sideVector[0], 0, vectorAction[1] * sideVector[2]) * 10f);
-
-            List<float> metrics = PerformanceMetrics();
-
-            if (metricData.Count == 0) {
-                metricData = metrics;
-            }
-            else {
-                for (int i = 0; i < metrics.Count; i++)
-                {
-                    metricData[i] += metrics[i]; 
-                    nextReward += metrics[i];
-                } 
-            }
-            numDataPoints++;
-
-            SetReward(nextReward);
-        }
+        
 
         if (nextReward != 0 || ball.position.y <= 0f) 
         {
@@ -176,7 +165,7 @@ public class RCAgent : Agent {
 
         for (int i = 0; i < metricData.Count; i++)
         {
-            print(metricData[i]/numDataPoints);
+            //print(metricData[i]/numDataPoints);
         }
 
         numDataPoints = 0;
@@ -202,6 +191,72 @@ public class RCAgent : Agent {
         }
 
         return closestTeammate;
+    }
+    
+    void MoveToAndKickBall () 
+    {
+        if (ShouldKick()) {
+            if (Vector3.Distance(transform.position, ball.position) < kickableDistance / 1.25f)
+            {
+                currentSpeed = 0f;
+            }
+            if (Vector3.Distance(transform.position, ball.position) < kickableDistance && timeInBallRange > kickCooldown)
+            {
+                KickBallForward();
+            }
+            else
+            {
+                MoveToPoint(ball.position);
+            }
+        }
+        else
+        {
+            MoveToPoint(ball.position + (ball.position - otherGoal.position).normalized * turnRadius * 2f);
+        }
+    }
+
+    void PositionToReceiveBall (float[] vectorAction) 
+    {
+        MoveToPoint(new Vector3(vectorAction[0] * sideVector[0], 0, vectorAction[1] * sideVector[2]) * 10f);
+
+        List<float> metrics = PerformanceMetrics();
+
+        if (metricData.Count == 0) {
+            metricData = metrics;
+        }
+        else {
+            for (int i = 0; i < metrics.Count; i++)
+            {
+                metricData[i] += metrics[i]; 
+                nextReward += metrics[i];
+            } 
+        }
+        numDataPoints++;
+
+        SetReward(nextReward);
+    }
+
+    
+    void PositionToReceiveBallRandom () 
+    {
+        MoveToPoint(new Vector3(Random.Range(-3f,3f) * sideVector[0], 0,  Random.Range(-4.5f,4.5f) * sideVector[2]));
+    
+
+        List<float> metrics = PerformanceMetrics();
+
+        if (metricData.Count == 0) {
+            metricData = metrics;
+        }
+        else {
+            for (int i = 0; i < metrics.Count; i++)
+            {
+                metricData[i] += metrics[i]; 
+                nextReward += metrics[i];
+            } 
+        }
+        numDataPoints++;
+
+        SetReward(nextReward);
     }
 
     bool ShouldKick () {
@@ -292,7 +347,7 @@ public class RCAgent : Agent {
         float closestOpponentToGoalPath = Mathf.Infinity;
         float distanceToOpponentGoal = Vector3.Distance(transform.position, otherGoal.position);
         Transform closestTeammateToBall = GetNearestTeammateToPoint(ball.position);
-        float angleToTeammatePassPath = Vector3.Angle(closestTeammateToBall.forward * 10f, (transform.position - closestTeammateToBall.position));
+        float angleToTeammatePassPath = Vector3.Angle(closestTeammateToBall.forward, (transform.position - closestTeammateToBall.position));
         float angleToGoalPath = Vector3.Angle(transform.forward, otherGoal.position - transform.position);
 
         foreach (Transform opponent in opponents) {
@@ -313,3 +368,5 @@ public class RCAgent : Agent {
         return metrics;
     }
 }
+
+

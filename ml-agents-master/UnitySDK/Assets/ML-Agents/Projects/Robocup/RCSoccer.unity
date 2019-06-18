@@ -573,6 +573,7 @@ MonoBehaviour:
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
+  behaviourSystem: 0
 --- !u!4 &492273612
 Transform:
   m_ObjectHideFlags: 0
@@ -992,7 +993,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.01, z: 1}
   m_Children: []
   m_Father: {fileID: 1712097373}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &713633456
 BoxCollider:
@@ -1319,6 +1320,7 @@ MonoBehaviour:
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
+  behaviourSystem: 1
 --- !u!4 &772905157
 Transform:
   m_ObjectHideFlags: 0
@@ -1866,6 +1868,7 @@ MonoBehaviour:
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
+  behaviourSystem: 0
 --- !u!4 &1223085757
 Transform:
   m_ObjectHideFlags: 0
@@ -2129,7 +2132,7 @@ Transform:
   m_LocalScale: {x: 0.06, y: 0.0001, z: 0.089999996}
   m_Children: []
   m_Father: {fileID: 1712097373}
-  m_RootOrder: 4
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1365947653
 BoxCollider:
@@ -2288,6 +2291,7 @@ MonoBehaviour:
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
+  behaviourSystem: 0
 --- !u!1 &1448259681
 GameObject:
   m_ObjectHideFlags: 0
@@ -2370,6 +2374,7 @@ MonoBehaviour:
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
+  behaviourSystem: 1
 --- !u!4 &1448259685
 Transform:
   m_ObjectHideFlags: 0
@@ -2468,6 +2473,7 @@ MonoBehaviour:
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
+  behaviourSystem: 1
 --- !u!4 &1516869571
 Transform:
   m_ObjectHideFlags: 0
@@ -2640,10 +2646,10 @@ Transform:
   - {fileID: 1955003536}
   - {fileID: 59027190}
   - {fileID: 1134077272}
-  - {fileID: 1365947652}
   - {fileID: 1924825452}
   - {fileID: 2035888254}
   - {fileID: 713633455}
+  - {fileID: 1365947652}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2780,7 +2786,7 @@ Transform:
   m_LocalScale: {x: 0.02, y: 0.01, z: 0.001227273}
   m_Children: []
   m_Father: {fileID: 1712097373}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1924825453
 BoxCollider:
@@ -2982,7 +2988,7 @@ Transform:
   m_LocalScale: {x: 0.02, y: 0.01, z: 0.001227273}
   m_Children: []
   m_Father: {fileID: 1712097373}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &2035888255
 BoxCollider:
