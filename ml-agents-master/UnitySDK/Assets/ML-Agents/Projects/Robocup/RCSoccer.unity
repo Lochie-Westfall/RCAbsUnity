@@ -520,10 +520,10 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 2
+  m_Radius: 0.2
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!54 &492273610
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -564,12 +564,13 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 1
-  kickCooldown: 1
-  turnTime: 2
+  kickCooldown: 4
+  turnTime: 8
   turnRadius: 0.5
   straightRunMultiplier: 1
-  kickDecisionAngle: 30
-  kickableDistance: 0.3
+  kickSegmentAngle: 60
+  kickDecisionAngle: 180
+  kickableDistance: 0.15
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
@@ -1267,10 +1268,10 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 2
+  m_Radius: 0.2
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!54 &772905155
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1311,16 +1312,17 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 0
-  kickCooldown: 1
-  turnTime: 2
+  kickCooldown: 4
+  turnTime: 8
   turnRadius: 0.5
   straightRunMultiplier: 1
-  kickDecisionAngle: 30
-  kickableDistance: 0.3
+  kickSegmentAngle: 60
+  kickDecisionAngle: 180
+  kickableDistance: 0.15
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
-  behaviourSystem: 1
+  behaviourSystem: 2
 --- !u!4 &772905157
 Transform:
   m_ObjectHideFlags: 0
@@ -1552,8 +1554,8 @@ Rigidbody:
   m_GameObject: {fileID: 1025293624}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 1
-  m_AngularDrag: 1
+  m_Drag: 0.5
+  m_AngularDrag: 0.5
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -1859,12 +1861,13 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 1
-  kickCooldown: 1
-  turnTime: 2
+  kickCooldown: 4
+  turnTime: 8
   turnRadius: 0.5
   straightRunMultiplier: 1
-  kickDecisionAngle: 30
-  kickableDistance: 0.3
+  kickSegmentAngle: 60
+  kickDecisionAngle: 180
+  kickableDistance: 0.15
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
@@ -1911,10 +1914,10 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 2
+  m_Radius: 0.2
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &1230584374
 GameObject:
   m_ObjectHideFlags: 0
@@ -2238,10 +2241,10 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 2
+  m_Radius: 0.2
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!54 &1428701527
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2282,12 +2285,13 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 1
-  kickCooldown: 1
-  turnTime: 2
+  kickCooldown: 4
+  turnTime: 8
   turnRadius: 0.5
   straightRunMultiplier: 1
-  kickDecisionAngle: 30
-  kickableDistance: 0.3
+  kickSegmentAngle: 60
+  kickDecisionAngle: 180
+  kickableDistance: 0.15
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
@@ -2321,10 +2325,10 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 2
+  m_Radius: 0.2
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!54 &1448259683
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2365,16 +2369,17 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 0
-  kickCooldown: 1
-  turnTime: 2
+  kickCooldown: 4
+  turnTime: 8
   turnRadius: 0.5
   straightRunMultiplier: 1
-  kickDecisionAngle: 30
-  kickableDistance: 0.3
+  kickSegmentAngle: 60
+  kickDecisionAngle: 180
+  kickableDistance: 0.15
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
-  behaviourSystem: 1
+  behaviourSystem: 2
 --- !u!4 &1448259685
 Transform:
   m_ObjectHideFlags: 0
@@ -2420,10 +2425,10 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 2
+  m_Radius: 0.2
+  m_Height: 1
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!54 &1516869569
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2464,16 +2469,17 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 0
-  kickCooldown: 1
-  turnTime: 2
+  kickCooldown: 4
+  turnTime: 8
   turnRadius: 0.5
   straightRunMultiplier: 1
-  kickDecisionAngle: 30
-  kickableDistance: 0.3
+  kickSegmentAngle: 60
+  kickDecisionAngle: 180
+  kickableDistance: 0.15
   kickPower: 200
   movingAngleRange: 10
   accelerationSpeed: 1
-  behaviourSystem: 1
+  behaviourSystem: 2
 --- !u!4 &1516869571
 Transform:
   m_ObjectHideFlags: 0
@@ -2522,8 +2528,9 @@ MonoBehaviour:
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: c101f6763a20a4d51abad4c6902c31be, type: 2}
-    _brainsToControl: []
-  maxSteps: 0
+    _brainsToControl:
+    - {fileID: 11400000, guid: c101f6763a20a4d51abad4c6902c31be, type: 2}
+  maxSteps: 5000
   trainingConfiguration:
     width: 80
     height: 80
@@ -2533,8 +2540,8 @@ MonoBehaviour:
   inferenceConfiguration:
     width: 1280
     height: 720
-    qualityLevel: 5
-    timeScale: 1
+    qualityLevel: 1
+    timeScale: 5
     targetFrameRate: 60
   resetParameters:
     resetParameters: []

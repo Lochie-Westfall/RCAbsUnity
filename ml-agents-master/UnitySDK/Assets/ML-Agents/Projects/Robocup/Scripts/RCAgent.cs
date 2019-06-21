@@ -26,7 +26,9 @@ public class RCAgent : Agent {
     public float turnRadius = 1f;
     public float straightRunMultiplier = 1.5f;
 
-    public float kickDecisionAngle = 30f;
+
+    public float kickSegmentAngle = 40f;
+    public float kickDecisionAngle = 90f;
     public float kickableDistance = 0.3f;
     public float kickPower = 200f;
     public float movingAngleRange = 10f;
@@ -44,6 +46,7 @@ public class RCAgent : Agent {
 
     public BehaviourSystem behaviourSystem = BehaviourSystem.trained;
 
+    bool ballOut;
     void Start () 
     {   
         sideVector = (leftSide)?new Vector3(1f, 1f, 1f):new Vector3(-1f, 1f, -1f);
@@ -152,21 +155,34 @@ public class RCAgent : Agent {
             nextReward = 0;
         }
 
-        if (ball.position.y <= 0f || goalScored) {
-            Done();
+        if (ballOut || goalScored) {
+            AgentReset();
         }
+
+        ballOut = ball.position.y <= 0f;
     }
 
     public override void AgentReset()
     {
-        transform.position = Vector3.right * Random.Range(-2f, 2f) + Vector3.forward * Random.Range(0f, 4f) * ((leftSide)?1:-1) + Vector3.up*0;
-        ball.position = Vector3.up;
+
+        if (gameObject.name.Contains("1")) 
+        {
+            transform.position = Vector3.forward * ((leftSide)?1f:-1f);
+        }
+        else 
+        {
+            transform.position = Vector3.right * Random.Range(-2f, 2f) + Vector3.forward * Random.Range(0f, 4f) * ((leftSide)?1:-1) + Vector3.up*0;
+        }
+        ball.position = Vector3.up*0.25f;
         ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+        transform.LookAt(new Vector3(ball.position.x, 0f, ball.position.z));
 
         for (int i = 0; i < metricData.Count; i++)
         {
             //print(metricData[i]/numDataPoints);
         }
+        ballOut = false;
 
         numDataPoints = 0;
         metricData.Clear();
@@ -202,7 +218,7 @@ public class RCAgent : Agent {
             }
             if (Vector3.Distance(transform.position, ball.position) < kickableDistance && timeInBallRange > kickCooldown)
             {
-                KickBallForward();
+                KickBallAngled(GetKickDirection());
             }
             else
             {
@@ -211,7 +227,7 @@ public class RCAgent : Agent {
         }
         else
         {
-            MoveToPoint(ball.position + (ball.position - otherGoal.position).normalized * turnRadius * 2f);
+            MoveToPoint(ball.position + (ball.position - otherGoal.position).normalized * turnRadius);
         }
     }
 
@@ -228,7 +244,7 @@ public class RCAgent : Agent {
             for (int i = 0; i < metrics.Count; i++)
             {
                 metricData[i] += metrics[i]; 
-                nextReward += metrics[i];
+                //nextReward += metrics[i];
             } 
         }
         numDataPoints++;
@@ -251,7 +267,7 @@ public class RCAgent : Agent {
             for (int i = 0; i < metrics.Count; i++)
             {
                 metricData[i] += metrics[i]; 
-                nextReward += metrics[i];
+                //nextReward += metrics[i];
             } 
         }
         numDataPoints++;
@@ -260,19 +276,71 @@ public class RCAgent : Agent {
     }
 
     bool ShouldKick () {
-            bool lookingAtTeammate = false;
-            foreach (Transform teammate in teammates) {
-                if (AngleToPoint(teammate.position) < kickDecisionAngle) {
-                    lookingAtTeammate = true;
-                }
+        bool lookingAtTeammate = false;
+        foreach (Transform teammate in teammates) {
+            if (AngleToPoint(teammate.position) < kickDecisionAngle) {
+                lookingAtTeammate = true;
             }
-            foreach (Transform opponent in opponents) {
-                if (AngleToPoint(opponent.position) < kickDecisionAngle) {
-                    lookingAtTeammate = false;
-                }
+        }
+        foreach (Transform opponent in opponents) {
+            if (AngleToPoint(opponent.position) < kickDecisionAngle) {
+                lookingAtTeammate = false;
             }
+        }
 
-            return (AngleToPoint(otherGoal.position) < kickDecisionAngle || lookingAtTeammate);
+        return (AngleToPoint(otherGoal.position) < kickDecisionAngle || lookingAtTeammate);
+    }
+
+    float GetKickDirection () {
+        int leftSegmentScore = kickSegmentScore(kickSegmentAngle*-1.5f, kickSegmentAngle*-0.5f);
+        int middleSegmentScore = kickSegmentScore(kickSegmentAngle*-0.5f, kickSegmentAngle*0.5f);
+        int rightSegmentScore = kickSegmentScore(kickSegmentAngle*0.5f, kickSegmentAngle*1.5f);
+
+        if (rightSegmentScore > middleSegmentScore && rightSegmentScore > leftSegmentScore) 
+        {
+            return kickSegmentAngle;
+        }
+        else if (leftSegmentScore > middleSegmentScore && leftSegmentScore > rightSegmentScore) 
+        {
+            return -kickSegmentAngle;
+        }
+        else 
+        {
+            if (middleSegmentScore == 0) {
+                return Mathf.Clamp(SignedAngleToPoint(otherGoal.position), -kickSegmentAngle, kickSegmentAngle);
+            }
+            else {
+                return 0f;
+            }
+        }
+    }
+
+    int kickSegmentScore (float leftAngle, float rightAngle) {
+
+        int score = 0;
+
+        foreach (Transform teammate in teammates) {
+            if (leftAngle <= SignedAngleToPoint(teammate.position) && SignedAngleToPoint(teammate.position) <= rightAngle) {
+                score += 2;
+            }
+        }
+        foreach (Transform opponent in opponents) {
+            if (leftAngle <= SignedAngleToPoint(opponent.position) && SignedAngleToPoint(opponent.position) <= rightAngle) {
+                score += -1;
+            }
+        } 
+        
+        if (leftAngle <= SignedAngleToPoint(goal.position) && SignedAngleToPoint(goal.position) <= rightAngle) {
+            score += -5;
+        }
+
+        if (leftAngle <= SignedAngleToPoint(otherGoal.position) && SignedAngleToPoint(otherGoal.position) <= rightAngle) {
+            score += 5;
+        }
+
+//        print(SignedAngleToPoint(otherGoal.position));
+
+        return score;
     }
 
     void KickBallPoint(Vector3 point) 
@@ -285,6 +353,17 @@ public class RCAgent : Agent {
 
     void KickBallForward(){
         ball.GetComponent<Rigidbody>().AddForce(transform.forward * kickPower);
+        currentSpeed = 0f;
+        timeLastKicked = Time.time;
+        timeInBallRange = 0f;
+    }
+    
+    void KickBallAngled (float angle) {
+//        Vector3 point = Mathf.Cos(Mathf.Deg2Rad*angle/360f) * transform.forward + Mathf.Sin(Mathf.Deg2Rad*angle/360f) * transform.right;
+        Vector3 point = Quaternion.AngleAxis(angle, Vector3.up) * transform.forward;
+
+        point.Normalize();
+        ball.GetComponent<Rigidbody>().AddForce(point * kickPower);
         currentSpeed = 0f;
         timeLastKicked = Time.time;
         timeInBallRange = 0f;
@@ -322,11 +401,15 @@ public class RCAgent : Agent {
 
     float AngleBetweenPoints (Vector3 a, Vector3 b) 
     {
-           return Vector3.Angle(b - transform.position, a - transform.position);
+        return Vector3.Angle(b - transform.position, a - transform.position);
     }
 
     float AngleToPoint (Vector3 point) {
         return Vector3.Angle(transform.forward, point - transform.position);
+    }
+    
+    float SignedAngleToPoint (Vector3 point) {
+        return Vector3.SignedAngle(transform.forward, point - transform.position, Vector3.up);
     }
 
     void AddPositiveReward ()
@@ -339,7 +422,7 @@ public class RCAgent : Agent {
 
     void AddNegativeReward () 
     {
-        nextReward = -50;
+        nextReward = -100;
     }
 
     List<float> PerformanceMetrics () {
