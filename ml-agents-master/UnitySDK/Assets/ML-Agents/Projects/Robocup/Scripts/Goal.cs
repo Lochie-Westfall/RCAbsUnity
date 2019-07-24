@@ -12,7 +12,9 @@ public class Goal : MonoBehaviour
     {
         if (other.gameObject.tag == "ball") {
             scoreEvent.Invoke();
+            
         }
     }
+
 
 }
