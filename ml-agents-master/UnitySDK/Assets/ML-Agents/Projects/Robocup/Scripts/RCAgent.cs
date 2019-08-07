@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
@@ -192,13 +192,33 @@ public class RCAgent : Agent {
     {
     }
     
+    Vector3 tangentPos;
+
+    float PathToPointLength (Transform from, Vector3 to) 
+    {
+        float dir = Mathf.Sign(Vector3.Dot(from.right, to - from.position));
+
+        Vector3 circleCentre = from.position+from.right*turnRadius*dir;
+        float tangentAngle = Mathf.Asin(turnRadius/Vector3.Distance(to, circleCentre));
+        float distance = Mathf.Sqrt(turnRadius*turnRadius + Mathf.Pow(Vector3.Distance(to, circleCentre),2f));
+        Vector3 circleBallDelta = (circleCentre - to).normalized;
+        tangentPos = ((Quaternion.Euler(0f, tangentAngle * Mathf.Rad2Deg + 0.000001f, 0f) * circleBallDelta) + to) * distance;
+
+        float pathSectorLength = turnRadius * Mathf.Deg2Rad * Vector3.Angle(from.position - circleCentre, tangentPos - circleCentre);
+
+        float totalDistance = pathSectorLength + Vector3.Distance(tangentPos, to);
+
+        return totalDistance;
+    }
+
     Transform GetNearestTeammateToPoint (Vector3 point) 
     {
         Transform closestTeammate = transform;
         float closestTeammateDist = 99999999999999f;
         foreach (Transform teammate in teammates) 
         {
-            float dist = Vector3.Distance(point, teammate.position); 
+            float dist = PathToPointLength(teammate, point);
+            //float dist = Vector3.Distance(point, teammate.position); 
             if (dist < closestTeammateDist) 
             {
                 closestTeammateDist = dist;
