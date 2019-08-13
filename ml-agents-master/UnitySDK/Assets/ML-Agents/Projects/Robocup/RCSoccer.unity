@@ -503,6 +503,7 @@ GameObject:
   - component: {fileID: 492273611}
   - component: {fileID: 492273610}
   - component: {fileID: 492273609}
+  - component: {fileID: 492273613}
   m_Layer: 0
   m_Name: Agent L 3
   m_TagString: left
@@ -518,9 +519,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 492273608}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.2
+  m_Radius: 1.25
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -538,7 +539,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 84
   m_CollisionDetection: 3
 --- !u!114 &492273611
 MonoBehaviour:
@@ -564,16 +565,17 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 1
-  kickCooldown: 4
-  turnTime: 8
+  kickCooldown: 3
+  walkSpeed: 0.5
   turnRadius: 0.5
   straightRunMultiplier: 1
   kickSegmentAngle: 60
   kickDecisionAngle: 180
-  kickableDistance: 0.15
-  kickPower: 200
+  kickableDistance: 0.3
+  kickPower: 150
   movingAngleRange: 10
-  accelerationSpeed: 1
+  accelerationSpeed: 0.1
+  standUptime: 3
   behaviourSystem: 0
 --- !u!4 &492273612
 Transform:
@@ -583,7 +585,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 492273608}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2, y: 0, z: 2}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children:
   - {fileID: 842384500}
@@ -591,6 +593,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &492273613
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 492273608}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.1}
+  m_Center: {x: 0, y: 0.25, z: -0.45}
 --- !u!1 &526163093
 GameObject:
   m_ObjectHideFlags: 0
@@ -1251,6 +1266,7 @@ GameObject:
   - component: {fileID: 772905156}
   - component: {fileID: 772905155}
   - component: {fileID: 772905154}
+  - component: {fileID: 772905158}
   m_Layer: 0
   m_Name: Agent R 1
   m_TagString: right
@@ -1266,9 +1282,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 772905153}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.2
+  m_Radius: 1.25
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -1286,7 +1302,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 84
   m_CollisionDetection: 3
 --- !u!114 &772905156
 MonoBehaviour:
@@ -1312,16 +1328,17 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 0
-  kickCooldown: 4
-  turnTime: 8
+  kickCooldown: 3
+  walkSpeed: 0.5
   turnRadius: 0.5
   straightRunMultiplier: 1
   kickSegmentAngle: 60
   kickDecisionAngle: 180
-  kickableDistance: 0.15
-  kickPower: 200
+  kickableDistance: 0.3
+  kickPower: 150
   movingAngleRange: 10
-  accelerationSpeed: 1
+  accelerationSpeed: 0.1
+  standUptime: 3
   behaviourSystem: 2
 --- !u!4 &772905157
 Transform:
@@ -1331,7 +1348,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 772905153}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children:
   - {fileID: 578043564}
@@ -1339,6 +1356,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &772905158
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772905153}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.1}
+  m_Center: {x: 0, y: 0.25, z: -0.45}
 --- !u!1 &842384499
 GameObject:
   m_ObjectHideFlags: 0
@@ -1628,7 +1658,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1025293624}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0.2, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1830,6 +1860,7 @@ GameObject:
   - component: {fileID: 1223085756}
   - component: {fileID: 1223085758}
   - component: {fileID: 1223085759}
+  - component: {fileID: 1223085760}
   m_Layer: 0
   m_Name: Agent L 1
   m_TagString: left
@@ -1861,16 +1892,17 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 1
-  kickCooldown: 4
-  turnTime: 8
+  kickCooldown: 3
+  walkSpeed: 0.5
   turnRadius: 0.5
   straightRunMultiplier: 1
   kickSegmentAngle: 60
   kickDecisionAngle: 180
-  kickableDistance: 0.15
-  kickPower: 200
+  kickableDistance: 0.3
+  kickPower: 150
   movingAngleRange: 10
-  accelerationSpeed: 1
+  accelerationSpeed: 0.1
+  standUptime: 3
   behaviourSystem: 0
 --- !u!4 &1223085757
 Transform:
@@ -1880,7 +1912,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1223085755}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children:
   - {fileID: 868506028}
@@ -1902,7 +1934,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 84
   m_CollisionDetection: 3
 --- !u!136 &1223085759
 CapsuleCollider:
@@ -1912,12 +1944,25 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1223085755}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.2
+  m_Radius: 1.25
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
+--- !u!65 &1223085760
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1223085755}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.1}
+  m_Center: {x: 0, y: 0.25, z: -0.45}
 --- !u!1 &1230584374
 GameObject:
   m_ObjectHideFlags: 0
@@ -2208,6 +2253,7 @@ GameObject:
   - component: {fileID: 1428701528}
   - component: {fileID: 1428701527}
   - component: {fileID: 1428701526}
+  - component: {fileID: 1428701529}
   m_Layer: 0
   m_Name: Agent L 2
   m_TagString: left
@@ -2223,7 +2269,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1428701524}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2, y: 0, z: 2}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children:
   - {fileID: 575228294}
@@ -2239,9 +2285,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1428701524}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.2
+  m_Radius: 1.25
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -2259,7 +2305,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 84
   m_CollisionDetection: 3
 --- !u!114 &1428701528
 MonoBehaviour:
@@ -2285,17 +2331,31 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 1
-  kickCooldown: 4
-  turnTime: 8
+  kickCooldown: 3
+  walkSpeed: 0.5
   turnRadius: 0.5
   straightRunMultiplier: 1
   kickSegmentAngle: 60
   kickDecisionAngle: 180
-  kickableDistance: 0.15
-  kickPower: 200
+  kickableDistance: 0.3
+  kickPower: 150
   movingAngleRange: 10
-  accelerationSpeed: 1
+  accelerationSpeed: 0.1
+  standUptime: 3
   behaviourSystem: 0
+--- !u!65 &1428701529
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428701524}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.1}
+  m_Center: {x: 0, y: 0.25, z: -0.45}
 --- !u!1 &1448259681
 GameObject:
   m_ObjectHideFlags: 0
@@ -2308,6 +2368,7 @@ GameObject:
   - component: {fileID: 1448259684}
   - component: {fileID: 1448259683}
   - component: {fileID: 1448259682}
+  - component: {fileID: 1448259686}
   m_Layer: 0
   m_Name: Agent R 3
   m_TagString: right
@@ -2323,9 +2384,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1448259681}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.2
+  m_Radius: 1.25
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -2343,7 +2404,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 84
   m_CollisionDetection: 3
 --- !u!114 &1448259684
 MonoBehaviour:
@@ -2369,16 +2430,17 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 0
-  kickCooldown: 4
-  turnTime: 8
+  kickCooldown: 3
+  walkSpeed: 0.5
   turnRadius: 0.5
   straightRunMultiplier: 1
   kickSegmentAngle: 60
   kickDecisionAngle: 180
-  kickableDistance: 0.15
-  kickPower: 200
+  kickableDistance: 0.3
+  kickPower: 150
   movingAngleRange: 10
-  accelerationSpeed: 1
+  accelerationSpeed: 0.1
+  standUptime: 3
   behaviourSystem: 2
 --- !u!4 &1448259685
 Transform:
@@ -2388,7 +2450,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1448259681}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2, y: 0, z: -2}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children:
   - {fileID: 462672199}
@@ -2396,6 +2458,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1448259686
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448259681}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.1}
+  m_Center: {x: 0, y: 0.25, z: -0.45}
 --- !u!1 &1516869567
 GameObject:
   m_ObjectHideFlags: 0
@@ -2408,6 +2483,7 @@ GameObject:
   - component: {fileID: 1516869570}
   - component: {fileID: 1516869569}
   - component: {fileID: 1516869568}
+  - component: {fileID: 1516869572}
   m_Layer: 0
   m_Name: Agent R 2
   m_TagString: right
@@ -2423,9 +2499,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1516869567}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.2
+  m_Radius: 1.25
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -2443,7 +2519,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 84
   m_CollisionDetection: 3
 --- !u!114 &1516869570
 MonoBehaviour:
@@ -2469,16 +2545,17 @@ MonoBehaviour:
   opponents: []
   teammates: []
   leftSide: 0
-  kickCooldown: 4
-  turnTime: 8
+  kickCooldown: 3
+  walkSpeed: 0.5
   turnRadius: 0.5
   straightRunMultiplier: 1
   kickSegmentAngle: 60
   kickDecisionAngle: 180
-  kickableDistance: 0.15
-  kickPower: 200
+  kickableDistance: 0.3
+  kickPower: 150
   movingAngleRange: 10
-  accelerationSpeed: 1
+  accelerationSpeed: 0.1
+  standUptime: 3
   behaviourSystem: 2
 --- !u!4 &1516869571
 Transform:
@@ -2488,7 +2565,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1516869567}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2, y: 0, z: -2}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children:
   - {fileID: 1230584375}
@@ -2496,6 +2573,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1516869572
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516869567}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.1}
+  m_Center: {x: 0, y: 0.25, z: -0.45}
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
@@ -2541,7 +2631,7 @@ MonoBehaviour:
     width: 1280
     height: 720
     qualityLevel: 1
-    timeScale: 5
+    timeScale: 10
     targetFrameRate: 60
   resetParameters:
     resetParameters: []

@@ -22,7 +22,8 @@ public class RCAgent : Agent {
     float nextReward = 0;
     float timeLastKicked = 0;
 
-    public float turnTime = 1f;
+    public float walkSpeed = 1f;
+    float turnTime = 1f;
     public float turnRadius = 1f;
     public float straightRunMultiplier = 1.5f;
 
@@ -34,7 +35,6 @@ public class RCAgent : Agent {
     public float movingAngleRange = 10f;
     public float accelerationSpeed = 1f;
 
-    float currentSpeed = 0f;
     float timeInBallRange = 0f;
 
     float numDataPoints = 0;
@@ -42,14 +42,25 @@ public class RCAgent : Agent {
 
     Vector3 sideVector;
 
+    float timeLastFallen = 0f;
+    public float standUptime = 3f;
+
     public enum BehaviourSystem {trained, random, clump};
 
     public BehaviourSystem behaviourSystem = BehaviourSystem.trained;
 
+
+    Vector3 startPos;
+
     bool ballOut;
+
+    float circumference;
+
     void Start () 
     {   
         sideVector = (leftSide)?new Vector3(1f, 1f, 1f):new Vector3(-1f, 1f, -1f);
+
+        startPos = transform.position;
 
         teammates = new List<Transform>();
         opponents = new List<Transform>();
@@ -90,6 +101,7 @@ public class RCAgent : Agent {
         otherGoal.GetComponent<Goal>().scoreEvent.AddListener(AddPositiveReward);
         goal.GetComponent<Goal>().scoreEvent.AddListener(AddNegativeReward);
 
+
     }
 
     public override void CollectObservations()
@@ -113,75 +125,78 @@ public class RCAgent : Agent {
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        bool goalScored = (nextReward != 0);
-        if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 1.5f) {
-            timeInBallRange += Time.deltaTime;
+        if (Time.time - timeLastFallen > standUptime) {
+            bool goalScored = (nextReward != 0);
+            if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 1.5f) {
+                timeInBallRange += Time.deltaTime;
+//               if (ball.GetComponent<Rigidbody>().velocity.magnitude < kickPower*0.01f) {
+//                   ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+//               }
+                if (Vector3.Distance(transform.position, ball.position) < kickableDistance) {
+                    GetComponent<Rigidbody>().isKinematic = true;
+                }
+                else {
+                    GetComponent<Rigidbody>().isKinematic = false;
+                }
+            }
+            else {
+                GetComponent<Rigidbody>().isKinematic = false;
+                timeInBallRange = 0f;
+            }
+
+            // TODO:: consider if you should kick by checking angle from each player to the goal rather than distance to the ball
+            switch (behaviourSystem)
+            {
+                case (BehaviourSystem.trained):
+                    if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 2f || PathToPointLength(transform, ball.position) < PathToPointLength(GetNearestTeammateToPoint(ball.position), ball.position))
+                    {
+                        MoveToAndKickBall();
+                    }
+                    else 
+                    {
+                        PositionToReceiveBall(vectorAction);
+                    }
+                    break;
+                case (BehaviourSystem.random):
+                    if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 2f || PathToPointLength(transform, ball.position) < PathToPointLength(GetNearestTeammateToPoint(ball.position), ball.position))
+                    {
+                        MoveToAndKickBall();
+                    }
+                    else 
+                    {
+                        PositionToReceiveBallRandom();
+                    }
+                    break;
+                case (BehaviourSystem.clump):
+                    MoveToAndKickBall();
+                    break;
+            }
+            
+
+            if (nextReward != 0 || ball.position.y <= 0f) 
+            {
+                nextReward = 0;
+            }
+
+            if (ballOut || goalScored) {
+                AgentReset();
+            }
+
+            ballOut = ball.position.y <= 0f;
         }
         else {
-            timeInBallRange = 0f;
+            GetComponent<Rigidbody>().isKinematic = true;
         }
-
-        // TODO:: consider if you should kick by checking angle from each player to the goal rather than distance to the ball
-        switch (behaviourSystem)
-        {
-            case (BehaviourSystem.trained):
-                if (Vector3.Distance(ball.position, transform.position) < Vector3.Distance(ball.position, GetNearestTeammateToPoint(ball.position).position))
-                {
-                    MoveToAndKickBall();
-                }
-                else 
-                {
-                    PositionToReceiveBall(vectorAction);
-                }
-                break;
-            case (BehaviourSystem.random):
-                if (Vector3.Distance(ball.position, transform.position) < Vector3.Distance(ball.position, GetNearestTeammateToPoint(ball.position).position))
-                {
-                    MoveToAndKickBall();
-                }
-                else 
-                {
-                    PositionToReceiveBallRandom();
-                }
-                break;
-            case (BehaviourSystem.clump):
-                MoveToAndKickBall();
-                break;
-        }
-        
-
-        if (nextReward != 0 || ball.position.y <= 0f) 
-        {
-            nextReward = 0;
-        }
-
-        if (ballOut || goalScored) {
-            AgentReset();
-        }
-
-        ballOut = ball.position.y <= 0f;
     }
 
     public override void AgentReset()
     {
-
-        if (gameObject.name.Contains("1")) 
-        {
-            transform.position = Vector3.forward * ((leftSide)?1f:-1f);
-        }
-        else 
-        {
-            transform.position = Vector3.right * Random.Range(-2f, 2f) + Vector3.forward * Random.Range(0f, 4f) * ((leftSide)?1:-1) + Vector3.up*0;
-        }
+        transform.position = startPos;
         ball.position = Vector3.up*0.25f;
         ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
         transform.LookAt(new Vector3(ball.position.x, 0f, ball.position.z));
 
-        for (int i = 0; i < metricData.Count; i++)
-        {
-            //print(metricData[i]/numDataPoints);
-        }
         ballOut = false;
 
         numDataPoints = 0;
@@ -199,16 +214,22 @@ public class RCAgent : Agent {
         float dir = Mathf.Sign(Vector3.Dot(from.right, to - from.position));
 
         Vector3 circleCentre = from.position+from.right*turnRadius*dir;
-        float tangentAngle = Mathf.Asin(turnRadius/Vector3.Distance(to, circleCentre));
-        float distance = Mathf.Sqrt(turnRadius*turnRadius + Mathf.Pow(Vector3.Distance(to, circleCentre),2f));
-        Vector3 circleBallDelta = (circleCentre - to).normalized;
-        tangentPos = ((Quaternion.Euler(0f, tangentAngle * Mathf.Rad2Deg + 0.000001f, 0f) * circleBallDelta) + to) * distance;
 
-        float pathSectorLength = turnRadius * Mathf.Deg2Rad * Vector3.Angle(from.position - circleCentre, tangentPos - circleCentre);
+        if (Vector3.Distance(circleCentre, ball.position) > turnRadius) {
+            float tangentAngle = Mathf.Asin(turnRadius/Vector3.Distance(to, circleCentre));
+            float distance = Mathf.Sqrt(turnRadius*turnRadius + Mathf.Pow(Vector3.Distance(to, circleCentre),2f));
+            Vector3 circleBallDelta = (circleCentre - to).normalized;
+            tangentPos = ((Quaternion.Euler(0f, tangentAngle * Mathf.Rad2Deg, 0f) * circleBallDelta) + to) * distance;
 
-        float totalDistance = pathSectorLength + Vector3.Distance(tangentPos, to);
+            float pathSectorLength = turnRadius * Mathf.Deg2Rad * Vector3.Angle(from.position - circleCentre, tangentPos - circleCentre);
 
-        return totalDistance;
+            float totalDistance = pathSectorLength + Vector3.Distance(tangentPos, to);
+
+            return totalDistance;
+        }
+        else {
+            return 2f*Mathf.PI*turnRadius;
+        }
     }
 
     Transform GetNearestTeammateToPoint (Vector3 point) 
@@ -231,23 +252,13 @@ public class RCAgent : Agent {
     
     void MoveToAndKickBall () 
     {
-        if (ShouldKick()) {
-            if (Vector3.Distance(transform.position, ball.position) < kickableDistance / 1.25f)
-            {
-                currentSpeed = 0f;
-            }
-            if (Vector3.Distance(transform.position, ball.position) < kickableDistance && timeInBallRange > kickCooldown)
-            {
-                KickBallAngled(GetKickDirection());
-            }
-            else
-            {
-                MoveToPoint(ball.position);
-            }
+        if (Vector3.Distance(transform.position, ball.position) < kickableDistance && timeInBallRange > kickCooldown)
+        {
+            KickBallAngled(GetKickDirection());
         }
         else
         {
-            MoveToPoint(ball.position + (ball.position - otherGoal.position).normalized * turnRadius);
+            MoveToPoint(ball.position);
         }
     }
 
@@ -358,33 +369,27 @@ public class RCAgent : Agent {
             score += 5;
         }
 
-//        print(SignedAngleToPoint(otherGoal.position));
-
         return score;
     }
 
     void KickBallPoint(Vector3 point) 
     {
-        ball.GetComponent<Rigidbody>().AddForce((point - (ball.position)).normalized * kickPower);
-        currentSpeed = 0f;
+        ball.GetComponent<Rigidbody>().velocity = ((point - (ball.position)).normalized * kickPower);
         timeLastKicked = Time.time;
         timeInBallRange = 0f;
     }
 
     void KickBallForward(){
         ball.GetComponent<Rigidbody>().AddForce(transform.forward * kickPower);
-        currentSpeed = 0f;
         timeLastKicked = Time.time;
         timeInBallRange = 0f;
     }
     
     void KickBallAngled (float angle) {
-//        Vector3 point = Mathf.Cos(Mathf.Deg2Rad*angle/360f) * transform.forward + Mathf.Sin(Mathf.Deg2Rad*angle/360f) * transform.right;
         Vector3 point = Quaternion.AngleAxis(angle, Vector3.up) * transform.forward;
 
         point.Normalize();
         ball.GetComponent<Rigidbody>().AddForce(point * kickPower);
-        currentSpeed = 0f;
         timeLastKicked = Time.time;
         timeInBallRange = 0f;
     }
@@ -396,27 +401,29 @@ public class RCAgent : Agent {
 
         float dir = Mathf.Sign(Vector3.Dot(transform.right, diff));
 
+        circumference = turnRadius * 2f * Mathf.PI;
+        turnTime = circumference / walkSpeed;
+
         if (AngleBetweenPoints(transform.position + transform.forward, point) < movingAngleRange) 
         {
-            Turn(0f, turnTime, turnRadius * straightRunMultiplier);
+            Turn(0f);
         }
         else 
         {
             if (Vector3.Distance(transform.position + transform.right*turnRadius*dir, point) > turnRadius) 
             {
-                Turn(dir, turnTime, turnRadius);
+                Turn(dir);
             }
             else
             {
-                Turn(0f, turnTime, turnRadius * straightRunMultiplier);
+                Turn(0f);
             }
         }
     }
 
-    void Turn(float direction, float timeToRotate, float radius) {
-        transform.Rotate(new Vector3(0f, Time.deltaTime * 360f / timeToRotate * direction * currentSpeed, 0f));
-        GetComponent<Rigidbody>().velocity = transform.forward * radius / timeToRotate * 2f * Mathf.PI * currentSpeed;
-        currentSpeed = Mathf.Clamp01(currentSpeed + Time.deltaTime * accelerationSpeed);
+    void Turn(float direction) {
+        GetComponent<Rigidbody>().angularVelocity = (new Vector3(0f, Time.deltaTime * 360f / turnTime * direction, 0f));
+        GetComponent<Rigidbody>().velocity = transform.forward * walkSpeed;
     }
 
     float AngleBetweenPoints (Vector3 a, Vector3 b) 
@@ -443,6 +450,13 @@ public class RCAgent : Agent {
     void AddNegativeReward () 
     {
         nextReward = -100;
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if (other.gameObject.tag == "left" || other.gameObject.tag == "right") {
+            timeLastFallen = Time.time;
+            timeInBallRange = 0f;
+        }
     }
 
     List<float> PerformanceMetrics () {

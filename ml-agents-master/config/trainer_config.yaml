@@ -24,11 +24,10 @@ default:
 RCAgentBrain:
     max_steps: 5.0e10
     hidden_units: 1024
-    gamma: 0.999
+    gamma: 0.99
     time_horizon: 256 
     sequence_length: 256
-    use_recurrent: true
-    learning_rate: 3.0e-5
+    learning_rate: 3.0e-4
 
 BananaLearning:
     normalize: false
