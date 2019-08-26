@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.57481706, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -504,6 +504,7 @@ GameObject:
   - component: {fileID: 492273610}
   - component: {fileID: 492273609}
   - component: {fileID: 492273613}
+  - component: {fileID: 492273614}
   m_Layer: 0
   m_Name: Agent L 3
   m_TagString: left
@@ -519,9 +520,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 492273608}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.25
+  m_Radius: 0.5
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -572,11 +573,12 @@ MonoBehaviour:
   kickSegmentAngle: 60
   kickDecisionAngle: 180
   kickableDistance: 0.3
-  kickPower: 150
+  kickPower: 125
   movingAngleRange: 10
   accelerationSpeed: 0.1
   standUptime: 3
   behaviourSystem: 0
+  isFallen: 0
 --- !u!4 &492273612
 Transform:
   m_ObjectHideFlags: 0
@@ -602,10 +604,24 @@ BoxCollider:
   m_GameObject: {fileID: 492273608}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 0.5, z: 0.1}
   m_Center: {x: 0, y: 0.25, z: -0.45}
+--- !u!136 &492273614
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 492273608}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.6
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &526163093
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,6 +1086,36 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 713633454}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &715567629
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 715567630}
+  m_Layer: 0
+  m_Name: STARTING POSITIONS NOT BEING USED SOMETIMES
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &715567630
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 715567629}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.022989, y: 1.1692233, z: -1.2349617}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &723310598
 GameObject:
   m_ObjectHideFlags: 0
@@ -1267,6 +1313,7 @@ GameObject:
   - component: {fileID: 772905155}
   - component: {fileID: 772905154}
   - component: {fileID: 772905158}
+  - component: {fileID: 772905159}
   m_Layer: 0
   m_Name: Agent R 1
   m_TagString: right
@@ -1282,9 +1329,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 772905153}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.25
+  m_Radius: 0.5
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -1335,11 +1382,12 @@ MonoBehaviour:
   kickSegmentAngle: 60
   kickDecisionAngle: 180
   kickableDistance: 0.3
-  kickPower: 150
+  kickPower: 125
   movingAngleRange: 10
   accelerationSpeed: 0.1
   standUptime: 3
   behaviourSystem: 2
+  isFallen: 0
 --- !u!4 &772905157
 Transform:
   m_ObjectHideFlags: 0
@@ -1365,10 +1413,24 @@ BoxCollider:
   m_GameObject: {fileID: 772905153}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 0.5, z: 0.1}
   m_Center: {x: 0, y: 0.25, z: -0.45}
+--- !u!136 &772905159
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772905153}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.6
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &842384499
 GameObject:
   m_ObjectHideFlags: 0
@@ -1861,6 +1923,7 @@ GameObject:
   - component: {fileID: 1223085758}
   - component: {fileID: 1223085759}
   - component: {fileID: 1223085760}
+  - component: {fileID: 1223085761}
   m_Layer: 0
   m_Name: Agent L 1
   m_TagString: left
@@ -1899,11 +1962,12 @@ MonoBehaviour:
   kickSegmentAngle: 60
   kickDecisionAngle: 180
   kickableDistance: 0.3
-  kickPower: 150
+  kickPower: 125
   movingAngleRange: 10
   accelerationSpeed: 0.1
   standUptime: 3
   behaviourSystem: 0
+  isFallen: 0
 --- !u!4 &1223085757
 Transform:
   m_ObjectHideFlags: 0
@@ -1944,9 +2008,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1223085755}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.25
+  m_Radius: 0.5
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -1959,10 +2023,24 @@ BoxCollider:
   m_GameObject: {fileID: 1223085755}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 0.5, z: 0.1}
   m_Center: {x: 0, y: 0.25, z: -0.45}
+--- !u!136 &1223085761
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1223085755}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.6
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &1230584374
 GameObject:
   m_ObjectHideFlags: 0
@@ -2254,6 +2332,7 @@ GameObject:
   - component: {fileID: 1428701527}
   - component: {fileID: 1428701526}
   - component: {fileID: 1428701529}
+  - component: {fileID: 1428701530}
   m_Layer: 0
   m_Name: Agent L 2
   m_TagString: left
@@ -2285,9 +2364,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1428701524}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.25
+  m_Radius: 0.5
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -2338,11 +2417,12 @@ MonoBehaviour:
   kickSegmentAngle: 60
   kickDecisionAngle: 180
   kickableDistance: 0.3
-  kickPower: 150
+  kickPower: 125
   movingAngleRange: 10
   accelerationSpeed: 0.1
   standUptime: 3
   behaviourSystem: 0
+  isFallen: 0
 --- !u!65 &1428701529
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2352,10 +2432,24 @@ BoxCollider:
   m_GameObject: {fileID: 1428701524}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 0.5, z: 0.1}
   m_Center: {x: 0, y: 0.25, z: -0.45}
+--- !u!136 &1428701530
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428701524}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.6
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &1448259681
 GameObject:
   m_ObjectHideFlags: 0
@@ -2369,6 +2463,7 @@ GameObject:
   - component: {fileID: 1448259683}
   - component: {fileID: 1448259682}
   - component: {fileID: 1448259686}
+  - component: {fileID: 1448259687}
   m_Layer: 0
   m_Name: Agent R 3
   m_TagString: right
@@ -2384,9 +2479,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1448259681}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.25
+  m_Radius: 0.5
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -2437,11 +2532,12 @@ MonoBehaviour:
   kickSegmentAngle: 60
   kickDecisionAngle: 180
   kickableDistance: 0.3
-  kickPower: 150
+  kickPower: 125
   movingAngleRange: 10
   accelerationSpeed: 0.1
   standUptime: 3
   behaviourSystem: 2
+  isFallen: 0
 --- !u!4 &1448259685
 Transform:
   m_ObjectHideFlags: 0
@@ -2467,10 +2563,24 @@ BoxCollider:
   m_GameObject: {fileID: 1448259681}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 0.5, z: 0.1}
   m_Center: {x: 0, y: 0.25, z: -0.45}
+--- !u!136 &1448259687
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448259681}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.6
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &1516869567
 GameObject:
   m_ObjectHideFlags: 0
@@ -2484,6 +2594,7 @@ GameObject:
   - component: {fileID: 1516869569}
   - component: {fileID: 1516869568}
   - component: {fileID: 1516869572}
+  - component: {fileID: 1516869573}
   m_Layer: 0
   m_Name: Agent R 2
   m_TagString: right
@@ -2499,9 +2610,9 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1516869567}
   m_Material: {fileID: 13400000, guid: 54ed79b9254e1456587c8cf3849f6dc1, type: 2}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.25
+  m_Radius: 0.5
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
@@ -2552,11 +2663,12 @@ MonoBehaviour:
   kickSegmentAngle: 60
   kickDecisionAngle: 180
   kickableDistance: 0.3
-  kickPower: 150
+  kickPower: 125
   movingAngleRange: 10
   accelerationSpeed: 0.1
   standUptime: 3
   behaviourSystem: 2
+  isFallen: 0
 --- !u!4 &1516869571
 Transform:
   m_ObjectHideFlags: 0
@@ -2582,10 +2694,24 @@ BoxCollider:
   m_GameObject: {fileID: 1516869567}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 0.5, z: 0.1}
   m_Center: {x: 0, y: 0.25, z: -0.45}
+--- !u!136 &1516869573
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516869567}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.6
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
@@ -2618,8 +2744,7 @@ MonoBehaviour:
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: c101f6763a20a4d51abad4c6902c31be, type: 2}
-    _brainsToControl:
-    - {fileID: 11400000, guid: c101f6763a20a4d51abad4c6902c31be, type: 2}
+    _brainsToControl: []
   maxSteps: 5000
   trainingConfiguration:
     width: 80
@@ -2631,7 +2756,7 @@ MonoBehaviour:
     width: 1280
     height: 720
     qualityLevel: 1
-    timeScale: 10
+    timeScale: 5
     targetFrameRate: 60
   resetParameters:
     resetParameters: []

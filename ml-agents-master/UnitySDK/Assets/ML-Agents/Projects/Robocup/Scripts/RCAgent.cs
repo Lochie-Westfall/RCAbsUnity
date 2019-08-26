@@ -35,6 +35,8 @@ public class RCAgent : Agent {
     public float movingAngleRange = 10f;
     public float accelerationSpeed = 1f;
 
+    bool lastGoalWasUs = false;
+
     float timeInBallRange = 0f;
 
     float numDataPoints = 0;
@@ -49,6 +51,7 @@ public class RCAgent : Agent {
 
     public BehaviourSystem behaviourSystem = BehaviourSystem.trained;
 
+    public bool isFallen = false;
 
     Vector3 startPos;
 
@@ -58,6 +61,10 @@ public class RCAgent : Agent {
 
     void Start () 
     {   
+
+        lastGoalWasUs = leftSide;
+
+        timeLastFallen = -9999999999f;
         sideVector = (leftSide)?new Vector3(1f, 1f, 1f):new Vector3(-1f, 1f, -1f);
 
         startPos = transform.position;
@@ -125,13 +132,16 @@ public class RCAgent : Agent {
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        if (Time.time - timeLastFallen > standUptime) {
-            bool goalScored = (nextReward != 0);
+        bool goalScored = (nextReward != 0);
+        bool optimalBallCharger = transform == GetNearestTeammateToPoint(ball.position);
+        // CHANGE MAGNITUDE CHECK
+        Vector3 tempPos = ball.position;
+        tempPos.y = 0;
+        if (Time.time - timeLastFallen > standUptime && ((!lastGoalWasUs && optimalBallCharger) || tempPos.magnitude > 0.01f)) {
+            isFallen = false;
             if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 1.5f) {
                 timeInBallRange += Time.deltaTime;
-//               if (ball.GetComponent<Rigidbody>().velocity.magnitude < kickPower*0.01f) {
-//                   ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
-//               }
+
                 if (Vector3.Distance(transform.position, ball.position) < kickableDistance) {
                     GetComponent<Rigidbody>().isKinematic = true;
                 }
@@ -144,11 +154,10 @@ public class RCAgent : Agent {
                 timeInBallRange = 0f;
             }
 
-            // TODO:: consider if you should kick by checking angle from each player to the goal rather than distance to the ball
             switch (behaviourSystem)
             {
                 case (BehaviourSystem.trained):
-                    if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 2f || PathToPointLength(transform, ball.position) < PathToPointLength(GetNearestTeammateToPoint(ball.position), ball.position))
+                    if (Vector3.Distance(transform.position, ball.position) < kickableDistance || optimalBallCharger)
                     {
                         MoveToAndKickBall();
                     }
@@ -158,7 +167,7 @@ public class RCAgent : Agent {
                     }
                     break;
                 case (BehaviourSystem.random):
-                    if (Vector3.Distance(transform.position, ball.position) < kickableDistance * 2f || PathToPointLength(transform, ball.position) < PathToPointLength(GetNearestTeammateToPoint(ball.position), ball.position))
+                    if (Vector3.Distance(transform.position, ball.position) < kickableDistance || optimalBallCharger)
                     {
                         MoveToAndKickBall();
                     }
@@ -172,28 +181,33 @@ public class RCAgent : Agent {
                     break;
             }
             
-
-            if (nextReward != 0 || ball.position.y <= 0f) 
-            {
-                nextReward = 0;
-            }
-
-            if (ballOut || goalScored) {
-                AgentReset();
-            }
-
-            ballOut = ball.position.y <= 0f;
         }
         else {
+            isFallen = true;
             GetComponent<Rigidbody>().isKinematic = true;
         }
+
+        if (nextReward != 0 || ball.position.y <= 0f) 
+        {
+            nextReward = 0;
+        }
+
+        if (ballOut || goalScored) {
+            AgentReset();
+        }
+
+        ballOut = ball.position.y <= 0f;
     }
 
     public override void AgentReset()
     {
+        timeLastFallen = -9999999999f;
         transform.position = startPos;
         ball.position = Vector3.up*0.25f;
         ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        ball.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
         transform.LookAt(new Vector3(ball.position.x, 0f, ball.position.z));
 
@@ -211,7 +225,8 @@ public class RCAgent : Agent {
 
     float PathToPointLength (Transform from, Vector3 to) 
     {
-        float dir = Mathf.Sign(Vector3.Dot(from.right, to - from.position));
+        float dir = Vector3.Dot(from.right, to - from.position);
+        dir = (dir==0)?0:Mathf.Sign(dir);
 
         Vector3 circleCentre = from.position+from.right*turnRadius*dir;
 
@@ -228,22 +243,24 @@ public class RCAgent : Agent {
             return totalDistance;
         }
         else {
-            return 2f*Mathf.PI*turnRadius;
+            return Mathf.PI*turnRadius;
         }
     }
 
     Transform GetNearestTeammateToPoint (Vector3 point) 
     {
         Transform closestTeammate = transform;
-        float closestTeammateDist = 99999999999999f;
+        float closestTeammateDist = PathToPointLength(transform, point);
         foreach (Transform teammate in teammates) 
         {
-            float dist = PathToPointLength(teammate, point);
-            //float dist = Vector3.Distance(point, teammate.position); 
-            if (dist < closestTeammateDist) 
-            {
-                closestTeammateDist = dist;
-                closestTeammate = teammate;
+            if (!teammate.GetComponent<RCAgent>().isFallen) {
+                float dist = PathToPointLength(teammate, point);
+                //float dist = Vector3.Distance(point, teammate.position); 
+                if (dist < closestTeammateDist) 
+                {
+                    closestTeammateDist = dist;
+                    closestTeammate = teammate;
+                }
             }
         }
 
@@ -441,6 +458,7 @@ public class RCAgent : Agent {
 
     void AddPositiveReward ()
      {
+        lastGoalWasUs = true;
         nextReward = 100;
         if (gameObject.name.Contains("1")) {
             print((leftSide)?"Left Scored":"Right Scored");
@@ -449,13 +467,18 @@ public class RCAgent : Agent {
 
     void AddNegativeReward () 
     {
+        lastGoalWasUs = false;
         nextReward = -100;
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (other.gameObject.tag == "left" || other.gameObject.tag == "right") {
+        if (standUptime > 0 && (other.gameObject.tag == "left" || other.gameObject.tag == "right")) {
             timeLastFallen = Time.time;
-            timeInBallRange = 0f;
+            Vector3 offset = transform.position - other.transform.position;
+            offset.y = 0;
+            transform.position += (offset).normalized * 0.125f;
+            //transform.position += 0.2f * (other.GetComponent<Rigidbody>().velocity.normalized + GetComponent<Rigidbody>().velocity.normalized);
+            timeInBallRange = -standUptime;
         }
     }
 
