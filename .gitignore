@@ -67,5 +67,7 @@ crashlytics-build.properties
 
 # MLAgents
 *.cptk*
+*/models/*
+*/builds/*
 
 # End of https://www.gitignore.io/api/unity
