@@ -187,6 +187,8 @@ public class RCAgent : Agent {
             GetComponent<Rigidbody>().isKinematic = true;
         }
 
+        SetReward(nextReward);
+
         if (nextReward != 0 || ball.position.y <= 0f) 
         {
             nextReward = 0;
@@ -221,8 +223,6 @@ public class RCAgent : Agent {
     {
     }
     
-    Vector3 tangentPos;
-
     float PathToPointLength (Transform from, Vector3 to) 
     {
         float dir = Vector3.Dot(from.right, to - from.position);
@@ -234,7 +234,7 @@ public class RCAgent : Agent {
             float tangentAngle = Mathf.Asin(turnRadius/Vector3.Distance(to, circleCentre));
             float distance = Mathf.Sqrt(turnRadius*turnRadius + Mathf.Pow(Vector3.Distance(to, circleCentre),2f));
             Vector3 circleBallDelta = (circleCentre - to).normalized;
-            tangentPos = ((Quaternion.Euler(0f, tangentAngle * Mathf.Rad2Deg, 0f) * circleBallDelta) + to) * distance;
+            Vector3 tangentPos = ((Quaternion.Euler(0f, tangentAngle * Mathf.Rad2Deg, 0f) * circleBallDelta) + to) * distance;
 
             float pathSectorLength = turnRadius * Mathf.Deg2Rad * Vector3.Angle(from.position - circleCentre, tangentPos - circleCentre);
 
@@ -297,7 +297,6 @@ public class RCAgent : Agent {
         }
         numDataPoints++;
 
-        SetReward(nextReward);
     }
 
     
@@ -320,7 +319,6 @@ public class RCAgent : Agent {
         }
         numDataPoints++;
 
-        SetReward(nextReward);
     }
 
     bool ShouldKick () {

@@ -4,15 +4,54 @@ using UnityEngine;
 
 public class AgentController : MonoBehaviour
 {
+    // Configuration
+
     public AgentConfig config;
+    public bool isLeftSide;
+
+    // Scene objects
+
+    Transform ball;
+
+    Transform leftGoal;
+    Transform rightGoal;
+    [HideInInspector]
+    public Transform otherGoal;
+    [HideInInspector]
+    public Transform goal;
 
     // State variables
 
     float timeLastCollided;
     float timeInBallRange;
     float timeLastKicked;
+    Vector3 startingPosition;
+
+    bool isBallOut;
+    bool wasGoalScored;
+
 
     // Methods
+
+    void Start () {
+        ball = GameObject.Find("ball").transform;
+        startingPosition = transform.position;
+
+        leftGoal = GameObject.Find("Goal L").transform;
+        rightGoal = GameObject.Find("Goal R").transform;
+        otherGoal = (isLeftSide)?rightGoal:leftGoal;
+        goal = (isLeftSide)?leftGoal:rightGoal;
+
+        otherGoal.GetComponent<Goal>().scoreEvent.AddListener(GoalScored);
+        goal.GetComponent<Goal>().scoreEvent.AddListener(GoalScoredAgainst);
+    }
+
+    void Update () {
+        if (isBallOut || wasGoalScored) {
+            Reset();
+        }
+        isBallOut = ball.position.y < 0f;
+    }
 
     public bool isStanding {
         get { 
@@ -23,16 +62,16 @@ public class AgentController : MonoBehaviour
     public bool canKick {
         get {
             bool hasKickDelayExpired = timeInBallRange > config.timeToKick;
-            bool isWithinKickRange = config.kickableRange < Vector3.Distance(transform.position, GameObject.Find("ball").transform.position);
-            return timeInBallRange > config.timeToKick;
+            bool isWithinKickRange = config.kickableRange < Vector3.Distance(transform.position, ball.transform.position);
+            return hasKickDelayExpired && isWithinKickRange && isStanding;
         }
     }
 
-    bool KickBallAtAngle (float angle) {
-        if (isStanding && canKick) {
+    public bool KickBallAtAngle (float angle) {
+        if (canKick) {
             Vector3 kickVector = Quaternion.AngleAxis(angle, Vector3.up) * transform.forward;
             kickVector.Normalize();
-            GameObject.Find("ball").GetComponent<Rigidbody>().AddForce(kickVector * config.kickPower);
+            ball.GetComponent<Rigidbody>().AddForce(kickVector * config.kickPower);
             timeLastKicked = Time.time;
             timeInBallRange = 0f;
 
@@ -43,7 +82,7 @@ public class AgentController : MonoBehaviour
         }
     }
 
-    bool Walk (float direction) {
+    public bool Walk (float direction) {
         if (isStanding) {
             GetComponent<Rigidbody>().angularVelocity = (new Vector3(0f, Time.deltaTime * 360f / config.turnTime * direction, 0f));
             GetComponent<Rigidbody>().velocity = transform.forward * config.walkSpeed;
@@ -54,6 +93,29 @@ public class AgentController : MonoBehaviour
             return false;
         }
 
+    }
+
+    void GoalScored () {
+        wasGoalScored = true;
+    }
+
+    void GoalScoredAgainst () {
+        wasGoalScored = true;
+    }
+
+    public void Reset () {
+        timeLastCollided = -9999999999f;
+        transform.position = startingPosition;
+        ball.position = Vector3.up*0.25f;
+        ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        ball.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+
+        transform.LookAt(new Vector3(ball.position.x, 0f, ball.position.z));
+
+        isBallOut = false;
+        wasGoalScored = false;
     }
 
     private void OnTriggerEnter(Collider other) {
