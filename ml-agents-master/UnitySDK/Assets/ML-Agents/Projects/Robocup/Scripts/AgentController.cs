@@ -8,6 +8,7 @@ public class AgentController : MonoBehaviour
 
     public AgentConfig config;
     public bool isLeftSide;
+    public bool isStriker;
 
     // Scene objects
 
@@ -29,12 +30,18 @@ public class AgentController : MonoBehaviour
 
     bool isBallOut;
     bool wasGoalScored;
+    bool lastGoalWasUs;
+
+    [HideInInspector]
+    public bool isKicking;
 
 
     // Methods
 
     void Start () {
-        ball = GameObject.Find("ball").transform;
+        // TODO:: find better way to determine the first kickoff
+        lastGoalWasUs = isLeftSide;
+        ball = GameObject.Find("Ball").transform;
         startingPosition = transform.position;
 
         leftGoal = GameObject.Find("Goal L").transform;
@@ -44,12 +51,35 @@ public class AgentController : MonoBehaviour
 
         otherGoal.GetComponent<Goal>().scoreEvent.AddListener(GoalScored);
         goal.GetComponent<Goal>().scoreEvent.AddListener(GoalScoredAgainst);
+
+        Reset();
     }
 
     void Update () {
         if (isBallOut || wasGoalScored) {
             Reset();
         }
+
+        if (Vector3.Distance(transform.position, ball.position) < config.kickableRange) {
+            timeInBallRange = Time.deltaTime;
+            if (Vector3.Distance(transform.position, ball.position) < config.kickableRange*0.75f) {
+                GetComponent<Rigidbody>().isKinematic = true;
+            }
+            else {
+                GetComponent<Rigidbody>().isKinematic = false;
+            }
+        }
+        else {
+            timeInBallRange = 0f;
+            GetComponent<Rigidbody>().isKinematic = false;
+        }
+
+        Vector3 ballPos = ball.position;
+        ballPos.y = 0f;
+        if (ballPos.magnitude < 0.001f && (lastGoalWasUs || (!lastGoalWasUs && !isStriker))) {
+            GetComponent<Rigidbody>().isKinematic = true;
+        }
+
         isBallOut = ball.position.y < 0f;
     }
 
@@ -62,7 +92,7 @@ public class AgentController : MonoBehaviour
     public bool canKick {
         get {
             bool hasKickDelayExpired = timeInBallRange > config.timeToKick;
-            bool isWithinKickRange = config.kickableRange < Vector3.Distance(transform.position, ball.transform.position);
+            bool isWithinKickRange = config.kickableRange > Vector3.Distance(transform.position, ball.transform.position);
             return hasKickDelayExpired && isWithinKickRange && isStanding;
         }
     }
@@ -97,10 +127,12 @@ public class AgentController : MonoBehaviour
 
     void GoalScored () {
         wasGoalScored = true;
+        lastGoalWasUs = true;
     }
 
     void GoalScoredAgainst () {
         wasGoalScored = true;
+        lastGoalWasUs = false;
     }
 
     public void Reset () {

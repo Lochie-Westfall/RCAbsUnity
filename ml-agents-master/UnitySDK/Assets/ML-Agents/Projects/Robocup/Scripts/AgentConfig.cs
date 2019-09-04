@@ -14,9 +14,7 @@ public class AgentConfig : ScriptableObject
 
     // TODO:: rename these variables
     public float kickSegmentAngle;
-    public float kickDecisionAngle;
-    public float kickableDistance;
-    public float movingAngleRange;
+    public float facingAngleRange;
 
     [Header("Walk Config")]
     public float walkSpeed;

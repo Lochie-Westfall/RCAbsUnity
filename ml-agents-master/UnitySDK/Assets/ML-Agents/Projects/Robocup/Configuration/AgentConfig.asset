@@ -17,5 +17,7 @@ MonoBehaviour:
   timeToKick: 3
   kickPower: 125
   kickableRange: 0.3
+  kickSegmentAngle: 30
+  facingAngleRange: 10
   walkSpeed: 0.5
   turnRadius: 0.5

@@ -378,23 +378,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 60
-  ball: {fileID: 1025293629}
-  opponents: []
-  teammates: []
-  leftSide: 1
-  kickCooldown: 3
-  walkSpeed: 0.5
-  turnRadius: 0.5
-  straightRunMultiplier: 1
-  kickSegmentAngle: 60
-  kickDecisionAngle: 180
-  kickableDistance: 0.3
-  kickPower: 125
-  movingAngleRange: 10
-  accelerationSpeed: 0.1
-  standUptime: 3
-  behaviourSystem: 0
-  isFallen: 0
 --- !u!4 &492273612
 Transform:
   m_ObjectHideFlags: 0
@@ -451,8 +434,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: ac294395d629b0f24a4c647c64b8aacc, type: 2}
   isLeftSide: 1
+  isStriker: 0
   otherGoal: {fileID: 0}
   goal: {fileID: 0}
+  isKicking: 0
 --- !u!114 &492273616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -465,6 +450,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 754b5d97befa2fc21b64722718a1419c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teammates: []
+  opponents: []
   sideVector: {x: 0, y: 0, z: 0}
 --- !u!1 &575228293
 GameObject:
@@ -1113,23 +1100,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 60
-  ball: {fileID: 1025293629}
-  opponents: []
-  teammates: []
-  leftSide: 0
-  kickCooldown: 3
-  walkSpeed: 0.5
-  turnRadius: 0.5
-  straightRunMultiplier: 1
-  kickSegmentAngle: 60
-  kickDecisionAngle: 180
-  kickableDistance: 0.3
-  kickPower: 125
-  movingAngleRange: 10
-  accelerationSpeed: 0.1
-  standUptime: 3
-  behaviourSystem: 2
-  isFallen: 0
 --- !u!4 &772905157
 Transform:
   m_ObjectHideFlags: 0
@@ -1186,8 +1156,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: ac294395d629b0f24a4c647c64b8aacc, type: 2}
   isLeftSide: 0
+  isStriker: 1
   otherGoal: {fileID: 0}
   goal: {fileID: 0}
+  isKicking: 0
 --- !u!114 &772905161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1200,6 +1172,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 754b5d97befa2fc21b64722718a1419c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teammates: []
+  opponents: []
   sideVector: {x: 0, y: 0, z: 0}
 --- !u!1 &842384499
 GameObject:
@@ -1723,23 +1697,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 60
-  ball: {fileID: 1025293629}
-  opponents: []
-  teammates: []
-  leftSide: 1
-  kickCooldown: 3
-  walkSpeed: 0.5
-  turnRadius: 0.5
-  straightRunMultiplier: 1
-  kickSegmentAngle: 60
-  kickDecisionAngle: 180
-  kickableDistance: 0.3
-  kickPower: 125
-  movingAngleRange: 10
-  accelerationSpeed: 0.1
-  standUptime: 3
-  behaviourSystem: 0
-  isFallen: 0
 --- !u!4 &1223085757
 Transform:
   m_ObjectHideFlags: 0
@@ -1826,8 +1783,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: ac294395d629b0f24a4c647c64b8aacc, type: 2}
   isLeftSide: 1
+  isStriker: 1
   otherGoal: {fileID: 0}
   goal: {fileID: 0}
+  isKicking: 0
 --- !u!114 &1223085763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1840,6 +1799,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 754b5d97befa2fc21b64722718a1419c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teammates: []
+  opponents: []
   sideVector: {x: 0, y: 0, z: 0}
 --- !u!1 &1230584374
 GameObject:
@@ -2114,23 +2075,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 60
-  ball: {fileID: 1025293629}
-  opponents: []
-  teammates: []
-  leftSide: 1
-  kickCooldown: 3
-  walkSpeed: 0.5
-  turnRadius: 0.5
-  straightRunMultiplier: 1
-  kickSegmentAngle: 60
-  kickDecisionAngle: 180
-  kickableDistance: 0.3
-  kickPower: 125
-  movingAngleRange: 10
-  accelerationSpeed: 0.1
-  standUptime: 3
-  behaviourSystem: 0
-  isFallen: 0
 --- !u!65 &1428701529
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2172,8 +2116,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: ac294395d629b0f24a4c647c64b8aacc, type: 2}
   isLeftSide: 1
+  isStriker: 0
   otherGoal: {fileID: 0}
   goal: {fileID: 0}
+  isKicking: 0
 --- !u!114 &1428701532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2186,6 +2132,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 754b5d97befa2fc21b64722718a1419c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teammates: []
+  opponents: []
   sideVector: {x: 0, y: 0, z: 0}
 --- !u!1 &1448259681
 GameObject:
@@ -2260,23 +2208,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 60
-  ball: {fileID: 1025293629}
-  opponents: []
-  teammates: []
-  leftSide: 0
-  kickCooldown: 3
-  walkSpeed: 0.5
-  turnRadius: 0.5
-  straightRunMultiplier: 1
-  kickSegmentAngle: 60
-  kickDecisionAngle: 180
-  kickableDistance: 0.3
-  kickPower: 125
-  movingAngleRange: 10
-  accelerationSpeed: 0.1
-  standUptime: 3
-  behaviourSystem: 2
-  isFallen: 0
 --- !u!4 &1448259685
 Transform:
   m_ObjectHideFlags: 0
@@ -2333,8 +2264,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: ac294395d629b0f24a4c647c64b8aacc, type: 2}
   isLeftSide: 0
+  isStriker: 0
   otherGoal: {fileID: 0}
   goal: {fileID: 0}
+  isKicking: 0
 --- !u!114 &1448259689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2347,6 +2280,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 754b5d97befa2fc21b64722718a1419c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teammates: []
+  opponents: []
   sideVector: {x: 0, y: 0, z: 0}
 --- !u!1 &1516869567
 GameObject:
@@ -2421,23 +2356,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 60
-  ball: {fileID: 1025293629}
-  opponents: []
-  teammates: []
-  leftSide: 0
-  kickCooldown: 3
-  walkSpeed: 0.5
-  turnRadius: 0.5
-  straightRunMultiplier: 1
-  kickSegmentAngle: 60
-  kickDecisionAngle: 180
-  kickableDistance: 0.3
-  kickPower: 125
-  movingAngleRange: 10
-  accelerationSpeed: 0.1
-  standUptime: 3
-  behaviourSystem: 2
-  isFallen: 0
 --- !u!4 &1516869571
 Transform:
   m_ObjectHideFlags: 0
@@ -2494,8 +2412,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: ac294395d629b0f24a4c647c64b8aacc, type: 2}
   isLeftSide: 0
+  isStriker: 0
   otherGoal: {fileID: 0}
   goal: {fileID: 0}
+  isKicking: 0
 --- !u!114 &1516869575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2508,6 +2428,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 754b5d97befa2fc21b64722718a1419c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teammates: []
+  opponents: []
   sideVector: {x: 0, y: 0, z: 0}
 --- !u!1 &1574236047
 GameObject:
