@@ -19,5 +19,5 @@ MonoBehaviour:
   kickableRange: 0.3
   kickSegmentAngle: 30
   facingAngleRange: 10
-  walkSpeed: 0.5
+  walkSpeed: 0.25
   turnRadius: 0.5

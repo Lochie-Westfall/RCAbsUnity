@@ -61,7 +61,7 @@ public class AgentController : MonoBehaviour
         }
 
         if (Vector3.Distance(transform.position, ball.position) < config.kickableRange) {
-            timeInBallRange = Time.deltaTime;
+            timeInBallRange += Time.deltaTime;
             if (Vector3.Distance(transform.position, ball.position) < config.kickableRange*0.75f) {
                 GetComponent<Rigidbody>().isKinematic = true;
             }
@@ -76,7 +76,7 @@ public class AgentController : MonoBehaviour
 
         Vector3 ballPos = ball.position;
         ballPos.y = 0f;
-        if (ballPos.magnitude < 0.001f && (lastGoalWasUs || (!lastGoalWasUs && !isStriker))) {
+        if (!isStanding || (ballPos.magnitude < 0.001f && (lastGoalWasUs || (!lastGoalWasUs && !isStriker)))) {
             GetComponent<Rigidbody>().isKinematic = true;
         }
 
@@ -138,13 +138,14 @@ public class AgentController : MonoBehaviour
     public void Reset () {
         timeLastCollided = -9999999999f;
         transform.position = startingPosition;
+        // TODO:: move ball resetting to own script
         ball.position = Vector3.up*0.25f;
         ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
         ball.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
-        transform.LookAt(new Vector3(ball.position.x, 0f, ball.position.z));
+        transform.LookAt(new Vector3(ball.position.x, transform.position.y, ball.position.z));
 
         isBallOut = false;
         wasGoalScored = false;
