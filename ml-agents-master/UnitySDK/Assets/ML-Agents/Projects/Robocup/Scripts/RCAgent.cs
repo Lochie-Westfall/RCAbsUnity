@@ -15,8 +15,6 @@ public class RCAgent : Agent {
 
     float nextReward = 0;
 
-    bool lastGoalWasUs = false;
-
     float numDataPoints = 0;
     List<float> metricData = new List<float>();
 
@@ -66,16 +64,8 @@ public class RCAgent : Agent {
             utils.PositionToReceiveBall(vectorAction);
         }
 
-        bool goalScored = (nextReward != 0);
-
         SetReward(nextReward);
         nextReward = 0;
-
-        if (ballOut || goalScored) {
-            AgentReset();
-        }
-
-
     }
 
     public override void AgentReset() {

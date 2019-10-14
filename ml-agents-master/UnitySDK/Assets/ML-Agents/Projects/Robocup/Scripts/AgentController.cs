@@ -23,7 +23,8 @@ public class AgentController : MonoBehaviour
 
     // State variables
 
-    float timeLastCollided;
+    [HideInInspector]
+    public float timeLastCollided;
     float timeInBallRange;
     float timeLastKicked;
     Vector3 startingPosition;
@@ -55,7 +56,7 @@ public class AgentController : MonoBehaviour
         Reset();
     }
 
-    void Update () {
+    void FixedUpdate () {
         if (isBallOut || wasGoalScored) {
             Reset();
         }
@@ -79,6 +80,11 @@ public class AgentController : MonoBehaviour
         if (!isStanding || (ballPos.magnitude < 0.001f && (lastGoalWasUs || (!lastGoalWasUs && !isStriker)))) {
             GetComponent<Rigidbody>().isKinematic = true;
         }
+
+        Vector3 eulerAngles = transform.eulerAngles;
+        eulerAngles.x = 0f;
+        eulerAngles.z = 0f;
+        transform.eulerAngles = eulerAngles;
 
         isBallOut = ball.position.y < 0f;
     }

@@ -9,6 +9,7 @@ public class AgentUtils : MonoBehaviour
     AgentConfig config;
 
     Transform ball;
+    Transform floor;
 
     [HideInInspector]
     public List<Transform> teammates;
@@ -23,6 +24,7 @@ public class AgentUtils : MonoBehaviour
         agentController = GetComponent<AgentController>();
         config = agentController.config;
         ball = GameObject.Find("Ball").transform;
+        floor = GameObject.Find("Floor").transform;
 
         teammates = new List<Transform>();
         opponents = new List<Transform>();
@@ -89,13 +91,12 @@ public class AgentUtils : MonoBehaviour
         float closestTeammateDist = PathToPointLength(transform, point);
         foreach (Transform teammate in teammates) 
         {
-            if (teammate.GetComponent<AgentController>().isStanding) {
-                float dist = PathToPointLength(teammate, point);
-                if (dist < closestTeammateDist) 
-                {
-                    closestTeammateDist = dist;
-                    closestTeammate = teammate;
-                }
+            float timeToStand = (agentController.isStanding) ? 0f : agentController.timeLastCollided + config.fallRecoveryTime - Time.time;
+            float dist = PathToPointLength(teammate, point) + timeToStand/config.walkSpeed;
+            if (dist < closestTeammateDist) 
+            {
+                closestTeammateDist = dist;
+                closestTeammate = teammate;
             }
         }
   
@@ -116,6 +117,9 @@ public class AgentUtils : MonoBehaviour
   
     public void PositionToReceiveBall (float[] vectorAction) 
     {
+        Vector3 fieldSize = floor.lossyScale;
+        vectorAction[0] = Mathf.Clamp(vectorAction[0], -fieldSize.x, fieldSize.x);
+        vectorAction[1] = Mathf.Clamp(vectorAction[1], -fieldSize.z, fieldSize.z);
         MoveToPoint(new Vector3(vectorAction[0] * sideVector[0], 0, vectorAction[1] * sideVector[2]) * 10f);
     }
   
