@@ -1,0 +1,5 @@
+Brain name,Time to update policy,Time since start of training,Time for last experience collection,Number of experiences used for training,Mean return
+RCAgentBrain,0.857,66.166,62.794,10404,-5.227
+RCAgentBrain,0.821,129.011,60.333,10284,-5.400
+RCAgentBrain,0.827,194.136,62.577,10452,-5.326
+RCAgentBrain,0.843,262.405,65.575,10260,-5.225
