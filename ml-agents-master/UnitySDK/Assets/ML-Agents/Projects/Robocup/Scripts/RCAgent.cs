@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using System.IO;
 
 public class RCAgent : Agent {
 
@@ -61,6 +62,11 @@ public class RCAgent : Agent {
         }
         else 
         {
+            string path = "Assets/Resources/position_data.txt";
+            StreamWriter writer = new StreamWriter(path, true);
+            writer.WriteLine(string.Format("{0} {1}", vectorAction[0].ToString(), vectorAction[1].ToString()));
+            writer.Close();
+
             utils.PositionToReceiveBall(vectorAction);
         }
 
