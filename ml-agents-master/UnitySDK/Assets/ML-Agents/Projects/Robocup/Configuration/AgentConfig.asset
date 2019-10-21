@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: AgentConfig
   m_EditorClassIdentifier: 
   isFallingEnabled: 1
-  fallRecoveryTime: 3
-  timeToKick: 3
+  fallRecoveryTime: 0.6
+  timeToKick: 0.6
   kickPower: 125
   kickableRange: 0.3
   kickSegmentAngle: 30
   facingAngleRange: 10
-  walkSpeed: 0.25
+  walkSpeed: 1.25
   turnRadius: 0.5
