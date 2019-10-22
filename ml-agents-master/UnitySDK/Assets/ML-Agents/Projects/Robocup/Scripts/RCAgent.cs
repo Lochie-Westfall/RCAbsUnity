@@ -25,7 +25,8 @@ public class RCAgent : Agent {
 
     float circumference;
 
-    int stepsSinceWrite = 0;
+    int stepsSincePositionWrite = 0;
+    int stepsSinceTargetWrite = 0;
 
     void Start () {   
         agentController = GetComponent<AgentController>();
@@ -58,15 +59,15 @@ public class RCAgent : Agent {
     public override void AgentAction(float[] vectorAction, string textAction) {
         bool optimalBallCharger = transform == utils.GetNearestTeammateToPoint(ball.position);
      
-
         Vector3 fieldSize = utils.floor.lossyScale;
         string path = "";
         StreamWriter writer;
-        if (GetComponent<Rigidbody>().isKinematic == false) {
+        if (GetComponent<Rigidbody>().isKinematic == false && stepsSincePositionWrite > 3) {
             path = "Assets/Resources/position_data" + (agentController.isLeftSide?"_left":"_right") + ".txt";
             writer = new StreamWriter(path, true);
             writer.WriteLine(string.Format("{0} {1}", Mathf.Clamp(transform.position.x,-fieldSize.x,fieldSize.x).ToString(), Mathf.Clamp(transform.position.z, -fieldSize.z, fieldSize.z).ToString()));
             writer.Close();
+            stepsSincePositionWrite = 0;
         }
             
         if (Vector3.Distance(transform.position, ball.position) < config.kickableRange || optimalBallCharger)
@@ -75,22 +76,21 @@ public class RCAgent : Agent {
         }
         else 
         {
-            if (GetComponent<Rigidbody>().isKinematic == false) {
-                float xTarget = Mathf.Clamp(10.81f*vectorAction[0], -fieldSize.x, fieldSize.x);
-                float yTarget = Mathf.Clamp(10.81f*vectorAction[1], -fieldSize.z, fieldSize.z);
+            float xTarget = Mathf.Clamp(10.81f*vectorAction[0], -fieldSize.x, fieldSize.x);
+            float yTarget = Mathf.Clamp(10.81f*vectorAction[1], -fieldSize.z, fieldSize.z);
+            if (GetComponent<Rigidbody>().isKinematic == false && stepsSinceTargetWrite > agentParameters.numberOfActionsBetweenDecisions) {
                 path = "Assets/Resources/target_data" + (agentController.isLeftSide?"_left":"_right") + ".txt";
                 writer = new StreamWriter(path, true);
                 writer.WriteLine(string.Format("{0} {1}", xTarget.ToString(), yTarget.ToString()));
                 writer.Close();
-                if (stepsSinceWrite > agentParameters.numberOfActionsBetweenDecisions) {
-                    stepsSinceWrite = 0;
-                }
-                utils.PositionToReceiveBall(xTarget, yTarget);
+                
+                stepsSinceTargetWrite = 0;
             }
+            utils.PositionToReceiveBall(xTarget, yTarget);
         }
 
-        stepsSinceWrite++;
-
+        stepsSincePositionWrite++;
+        stepsSinceTargetWrite++;
         SetReward(nextReward);
         nextReward = 0;
     }
