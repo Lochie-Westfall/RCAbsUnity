@@ -62,7 +62,7 @@ public class RCAgent : Agent {
         Vector3 fieldSize = utils.floor.lossyScale;
         string path = "";
         StreamWriter writer;
-        if (GetComponent<Rigidbody>().isKinematic == false && stepsSincePositionWrite > 3) {
+        if (Application.isEditor && GetComponent<Rigidbody>().isKinematic == false && stepsSincePositionWrite > 3) {
             path = "Assets/Resources/position_data" + (agentController.isLeftSide?"_left":"_right") + ".txt";
             writer = new StreamWriter(path, true);
             writer.WriteLine(string.Format("{0} {1}", Mathf.Clamp(transform.position.x,-fieldSize.x,fieldSize.x).ToString(), Mathf.Clamp(transform.position.z, -fieldSize.z, fieldSize.z).ToString()));
@@ -76,9 +76,14 @@ public class RCAgent : Agent {
         }
         else 
         {
-            float xTarget = Mathf.Clamp(10.81f*vectorAction[0], -fieldSize.x, fieldSize.x);
-            float yTarget = Mathf.Clamp(10.81f*vectorAction[1], -fieldSize.z, fieldSize.z);
-            if (GetComponent<Rigidbody>().isKinematic == false && stepsSinceTargetWrite > agentParameters.numberOfActionsBetweenDecisions) {
+            float xTarget = Mathf.Clamp(fieldSize.x*vectorAction[0], -fieldSize.x, fieldSize.x);
+            float yTarget = Mathf.Clamp(fieldSize.z*vectorAction[1], -fieldSize.z, fieldSize.z);
+
+            if (Mathf.Abs(vectorAction[0]) > 1f || Mathf.Abs(vectorAction[1]) > 1f) {
+                print("Target position is considerably off field, check for exploding gradients!");
+            }
+
+            if (Application.isEditor && GetComponent<Rigidbody>().isKinematic == false && stepsSinceTargetWrite > agentParameters.numberOfActionsBetweenDecisions) {
                 path = "Assets/Resources/target_data" + (agentController.isLeftSide?"_left":"_right") + ".txt";
                 writer = new StreamWriter(path, true);
                 writer.WriteLine(string.Format("{0} {1}", xTarget.ToString(), yTarget.ToString()));

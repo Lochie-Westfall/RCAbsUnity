@@ -25,8 +25,8 @@ RCAgentBrain:
     max_steps: 5.0e10
     hidden_units: 1024
     gamma: 0.99
-    time_horizon: 256 
-    sequence_length: 256
+    time_horizon: 128
+    batch_size: 128 
     learning_rate: 3.0e-3
 
 BananaLearning:
