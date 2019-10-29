@@ -2,15 +2,23 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-assert (len(sys.argv)>3), "usage: python this_url data_url detail sample_size" 
+print("usage: python this_url data_url detail sample_size") 
 
 rows = 12 + 2
 columns = 18 + 2
-detail = int(sys.argv[2])
-sample_size = round(int(sys.argv[3]))
+
+url = "/home/nubots/lochie/RCAbsUnity/ml-agents-master/UnitySDK/Assets/Resources/target_data_left.txt"
+detail = 2
+sample_size = 10000
+
+if (len(sys.argv) > 3): 
+	url = sys.argv[1]
+	detail = int(sys.argv[2])
+	sample_size = round(int(sys.argv[3]))
+	
+
 heat = np.zeros((rows*detail, columns*detail))
 
-url = sys.argv[1]
 data = open(url,"r")
 
 page_length = sum(1 for l in data)

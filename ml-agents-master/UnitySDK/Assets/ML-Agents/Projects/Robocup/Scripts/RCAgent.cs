@@ -12,8 +12,6 @@ public class RCAgent : Agent {
 
     Transform ball;
 
-    Vector3 targetPos;
-
     float nextReward = 0;
 
     float numDataPoints = 0;
@@ -28,6 +26,20 @@ public class RCAgent : Agent {
     int stepsSincePositionWrite = 0;
     int stepsSinceTargetWrite = 0;
 
+    Vector3 currentTargetPosition;
+
+    //[HideInInspector]
+    public bool isOptimalBallCharger;
+    bool wasOptimalBallCharger;
+    bool readyForDecision;
+
+    int framesSinceDecision;
+    Vector3 fieldSize;
+
+    int stepsSinceStart = 0;
+
+    Vector3 currentBallRegion;
+
     void Start () {   
         agentController = GetComponent<AgentController>();
         utils = GetComponent<AgentUtils>();
@@ -37,6 +49,83 @@ public class RCAgent : Agent {
         ball = GameObject.Find("Ball").transform;
         agentController.otherGoal.GetComponent<Goal>().scoreEvent.AddListener(AddPositiveReward);
         agentController.goal.GetComponent<Goal>().scoreEvent.AddListener(AddNegativeReward);
+
+        fieldSize = utils.floor.lossyScale;
+
+        currentTargetPosition = Vector3.zero;
+
+        currentBallRegion = ball.position;
+
+        RequestDecision();
+    }
+
+    void FixedUpdate () {
+
+        if (agentController.isStriker && Vector3.Distance(ball.position, currentBallRegion) > 0.1f) {
+            Transform nearestTeammateToBall = utils.GetNearestTeammateToPoint(ball.position);
+            foreach (Transform teammate in utils.teammates) {
+                teammate.GetComponent<RCAgent>().isOptimalBallCharger = teammate == nearestTeammateToBall;
+            }
+            isOptimalBallCharger = transform == utils.GetNearestTeammateToPoint(ball.position);
+            currentBallRegion = ball.position;
+        }
+
+
+
+        StreamWriter writer;
+        string path = "";
+
+        if ((Vector3.Distance(transform.position, currentTargetPosition) < config.decisionRadius && !isOptimalBallCharger) || (wasOptimalBallCharger && !isOptimalBallCharger)) {
+            readyForDecision = true;
+            wasOptimalBallCharger = false;
+
+            if (Application.isEditor && GetComponent<Rigidbody>().isKinematic == false) {
+                path = "Assets/Resources/target_data" + (agentController.isLeftSide?"_left":"_right") + ".txt";
+                writer = new StreamWriter(path, true);
+                writer.WriteLine(string.Format("{0} {1}", currentTargetPosition.x.ToString(), currentTargetPosition.z.ToString()));
+                writer.Close();
+                
+                stepsSinceTargetWrite = 0;
+            }
+        }
+
+        if (Application.isEditor && GetComponent<Rigidbody>().isKinematic == false && stepsSincePositionWrite > 3) {
+            path = "Assets/Resources/position_data" + (agentController.isLeftSide?"_left":"_right") + ".txt";
+            writer = new StreamWriter(path, true);
+            writer.WriteLine(string.Format("{0} {1}", Mathf.Clamp(transform.position.x,-fieldSize.x,fieldSize.x).ToString(), Mathf.Clamp(transform.position.z, -fieldSize.z, fieldSize.z).ToString()));
+            writer.Close();
+            stepsSincePositionWrite = 0;
+        }
+
+        if (framesSinceDecision > config.decisionInterval && readyForDecision) {
+            RequestDecision();
+            framesSinceDecision = 0;
+            readyForDecision = false;
+        }
+
+        Act();
+
+        framesSinceDecision++;
+        stepsSinceStart++;
+
+        if (isOptimalBallCharger) wasOptimalBallCharger = true;
+    }
+
+    void OnDrawGizmos () {
+        Gizmos.DrawSphere(currentTargetPosition, 0.1f);
+    }
+
+    public void Act() {
+        if (Vector3.Distance(transform.position, ball.position) < config.kickableRange * 1.25f || isOptimalBallCharger)
+        {
+            utils.MoveToAndKickBall();
+        }
+        else 
+        {
+            utils.PositionToReceiveBall(currentTargetPosition.x, currentTargetPosition.z);
+        }
+        stepsSincePositionWrite++;
+        stepsSinceTargetWrite++;
     }
 
     public override void CollectObservations() {
@@ -57,50 +146,14 @@ public class RCAgent : Agent {
     }
 
     public override void AgentAction(float[] vectorAction, string textAction) {
-        bool optimalBallCharger = transform == utils.GetNearestTeammateToPoint(ball.position);
-     
-        Vector3 fieldSize = utils.floor.lossyScale;
-        string path = "";
-        StreamWriter writer;
-        if (Application.isEditor && GetComponent<Rigidbody>().isKinematic == false && stepsSincePositionWrite > 3) {
-            path = "Assets/Resources/position_data" + (agentController.isLeftSide?"_left":"_right") + ".txt";
-            writer = new StreamWriter(path, true);
-            writer.WriteLine(string.Format("{0} {1}", Mathf.Clamp(transform.position.x,-fieldSize.x,fieldSize.x).ToString(), Mathf.Clamp(transform.position.z, -fieldSize.z, fieldSize.z).ToString()));
-            writer.Close();
-            stepsSincePositionWrite = 0;
+        currentTargetPosition.x = Mathf.Clamp(fieldSize.x/2f*vectorAction[0], -fieldSize.x, fieldSize.x);
+        currentTargetPosition.z = Mathf.Clamp(fieldSize.z/2f*vectorAction[1], -fieldSize.z, fieldSize.z);
+        if (Mathf.Abs(vectorAction[0]) > 1f || Mathf.Abs(vectorAction[1]) > 1f) {
+            print("Target position is considerably off field, check for exploding gradients!");
         }
-            
-        if (Vector3.Distance(transform.position, ball.position) < config.kickableRange || optimalBallCharger)
-        {
-            utils.MoveToAndKickBall();
-        }
-        else 
-        {
-            float xTarget = Mathf.Clamp(fieldSize.x*vectorAction[0], -fieldSize.x, fieldSize.x);
-            float yTarget = Mathf.Clamp(fieldSize.z*vectorAction[1], -fieldSize.z, fieldSize.z);
-
-            if (Mathf.Abs(vectorAction[0]) > 1f || Mathf.Abs(vectorAction[1]) > 1f) {
-                print("Target position is considerably off field, check for exploding gradients!");
-            }
-
-            if (Application.isEditor && GetComponent<Rigidbody>().isKinematic == false && stepsSinceTargetWrite > agentParameters.numberOfActionsBetweenDecisions) {
-                path = "Assets/Resources/target_data" + (agentController.isLeftSide?"_left":"_right") + ".txt";
-                writer = new StreamWriter(path, true);
-                writer.WriteLine(string.Format("{0} {1}", xTarget.ToString(), yTarget.ToString()));
-                writer.Close();
-                
-                stepsSinceTargetWrite = 0;
-            }
-            utils.PositionToReceiveBall(xTarget, yTarget);
-        }
-
-        stepsSincePositionWrite++;
-        stepsSinceTargetWrite++;
-        SetReward(nextReward);
-        nextReward = 0;
     }
-
     public override void AgentReset() {
+        RequestDecision();
         numDataPoints = 0;
         metricData.Clear();
     }

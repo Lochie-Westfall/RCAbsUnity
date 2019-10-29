@@ -21,3 +21,5 @@ MonoBehaviour:
   facingAngleRange: 10
   walkSpeed: 1.25
   turnRadius: 0.5
+  decisionRadius: 0.5
+  decisionInterval: 30

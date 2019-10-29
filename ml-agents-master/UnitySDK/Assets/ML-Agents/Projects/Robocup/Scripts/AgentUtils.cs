@@ -30,7 +30,7 @@ public class AgentUtils : MonoBehaviour
         teammates = new List<Transform>();
         opponents = new List<Transform>();
 
-        sideVector = (agentController.isLeftSide)?new Vector3(1f, 1f, 1f):new Vector3(-1f, 1f, -1f);
+        sideVector = (agentController.isLeftSide)?new Vector3(1, 0f, 1):new Vector3(-1, 0f, -1);
         
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("left")) 
         {
