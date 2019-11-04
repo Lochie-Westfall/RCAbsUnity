@@ -15,7 +15,7 @@ MonoBehaviour:
   isFallingEnabled: 1
   fallRecoveryTime: 0.6
   timeToKick: 0.6
-  kickPower: 125
+  kickPower: 150
   kickableRange: 0.3
   kickSegmentAngle: 30
   facingAngleRange: 10

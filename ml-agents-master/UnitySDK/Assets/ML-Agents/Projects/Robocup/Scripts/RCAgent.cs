@@ -146,8 +146,8 @@ public class RCAgent : Agent {
     }
 
     public override void AgentAction(float[] vectorAction, string textAction) {
-        currentTargetPosition.x = Mathf.Clamp(fieldSize.x/2f*vectorAction[0], -fieldSize.x, fieldSize.x);
-        currentTargetPosition.z = Mathf.Clamp(fieldSize.z/2f*vectorAction[1], -fieldSize.z, fieldSize.z);
+        currentTargetPosition.x = Mathf.Clamp(fieldSize.x/2f*vectorAction[0], -fieldSize.x/2f, fieldSize.x/2f);
+        currentTargetPosition.z = Mathf.Clamp(fieldSize.z/2f*vectorAction[1], -fieldSize.z/2f, fieldSize.z/2f);
         if (Mathf.Abs(vectorAction[0]) > 1f || Mathf.Abs(vectorAction[1]) > 1f) {
             print("Target position is considerably off field, check for exploding gradients!");
         }
@@ -195,5 +195,3 @@ public class RCAgent : Agent {
         return metrics;
     }
 }
-
-
