@@ -9,7 +9,8 @@ public class AgentUtils : MonoBehaviour
     AgentConfig config;
 
     Transform ball;
-    Transform floor;
+    [HideInInspector]
+    public Transform floor;
 
     [HideInInspector]
     public List<Transform> teammates;
@@ -29,7 +30,7 @@ public class AgentUtils : MonoBehaviour
         teammates = new List<Transform>();
         opponents = new List<Transform>();
 
-        sideVector = (agentController.isLeftSide)?new Vector3(1f, 1f, 1f):new Vector3(-1f, 1f, -1f);
+        sideVector = (agentController.isLeftSide)?new Vector3(1, 0f, 1):new Vector3(-1, 0f, -1);
         
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("left")) 
         {
@@ -115,12 +116,9 @@ public class AgentUtils : MonoBehaviour
         }
     }
   
-    public void PositionToReceiveBall (float[] vectorAction) 
+    public void PositionToReceiveBall (float x, float y) 
     {
-        Vector3 fieldSize = floor.lossyScale;
-        vectorAction[0] = Mathf.Clamp(vectorAction[0], -fieldSize.x, fieldSize.x);
-        vectorAction[1] = Mathf.Clamp(vectorAction[1], -fieldSize.z, fieldSize.z);
-        MoveToPoint(new Vector3(vectorAction[0] * sideVector[0], 0, vectorAction[1] * sideVector[2]) * 10f);
+        MoveToPoint(new Vector3(x * sideVector[0], 0, y * sideVector[2]));
     }
   
     

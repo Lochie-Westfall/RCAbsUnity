@@ -19,6 +19,8 @@ public class AgentConfig : ScriptableObject
     [Header("Walk Config")]
     public float walkSpeed;
     public float turnRadius;
+    public float decisionRadius;
+    public int decisionInterval;
     [HideInInspector]
     public float turnTime {
         get {

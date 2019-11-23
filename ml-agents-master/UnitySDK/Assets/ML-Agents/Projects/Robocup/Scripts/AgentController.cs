@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class AgentController : MonoBehaviour
 {
@@ -57,6 +58,9 @@ public class AgentController : MonoBehaviour
     }
 
     void FixedUpdate () {
+        if (isBallOut && isStriker) {
+            WriteOutcome(1);
+        }
         if (isBallOut || wasGoalScored) {
             Reset();
         }
@@ -132,13 +136,26 @@ public class AgentController : MonoBehaviour
     }
 
     void GoalScored () {
+        if (isStriker) {
+            WriteOutcome(2);
+        }
         wasGoalScored = true;
         lastGoalWasUs = true;
     }
 
     void GoalScoredAgainst () {
+        if (isStriker) {
+            WriteOutcome(0);
+        }
         wasGoalScored = true;
         lastGoalWasUs = false;
+    }
+    
+    public void WriteOutcome (int outcome) {
+        string path = "Assets/Resources/outcomes" + (lastGoalWasUs?"_theirs":"_ours") + (isLeftSide?"_left":"_right") + ".txt";
+        StreamWriter writer = new StreamWriter(path, true);
+        writer.Write(string.Format("{0} ", outcome.ToString()));
+        writer.Close();
     }
 
     public void Reset () {
